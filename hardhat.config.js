@@ -72,11 +72,10 @@ module.exports = {
         initialIndex: 0,
         count: 20,
       },
-      xDAI: {
-        url: `https://xdai.poanetwork.dev`,
-        gasPrice: 1000000000,
-        accounts: [`${process.env.PRIVATE_KEY_XDAI}`]
-      }
+    },
+    xDAI: {
+      url: `https://xdai.poanetwork.dev`,
+      accounts: [`${process.env.PRIVATE_KEY_XDAI}`]
     }
   },
   etherscan: {

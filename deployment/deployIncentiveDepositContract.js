@@ -12,7 +12,7 @@ async function main() {
         Deploy Dappnode Incentive deposit contract
     */
     console.log('\n#######################');
-    console.log('##### Deployment Proof of Efficiency #####');
+    console.log('##### Deployment Incentive Despoit Contract #####');
     console.log('#######################');
     console.log('sbcToken:', sbcTokenAddress);
     console.log('sbcDepositContract:', sbcDepositContractAddress);
