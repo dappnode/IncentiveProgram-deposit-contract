@@ -6,7 +6,7 @@
     "test": "npx hardhat test",
     "deploy:IncentiveProgram:hardhat": "npx hardhat run deployment/deployIncentiveDepositContract.js --network hardhat",
     "deploy:IncentiveProgram:xDai": "npx hardhat run deployment/deployIncentiveDepositContract.js --network xDAI",
-    "flatten:IncentiveProgram": "npx hardhat flatten contracts/dappnodeContracts/IncentiveDepositContract.sol > IncentveDepositContract.flat.sol"
+    "flatten:IncentiveProgram": "npx hardhat flatten contracts/dappnodeContracts/IncentiveDepositContract.sol > deployment/IncentveDepositContract.flat"
   },
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",

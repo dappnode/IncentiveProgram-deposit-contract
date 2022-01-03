@@ -22,3 +22,9 @@ npm run test
 ```
 npm run deploy:IncentiveProgram:hardhat
 ```
+
+## Deploy on xDAi
+
+```
+npm run deploy:IncentiveProgram:xDai
+```

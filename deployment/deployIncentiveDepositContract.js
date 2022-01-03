@@ -6,7 +6,7 @@ async function main() {
 
     // xDai Address
     const sbcTokenAddress = "0x722fc4DAABFEaff81b97894fC623f91814a1BF68";
-    const sbcDepositContractAddress = "0x6da1365c3baad9b6ccb76c2560523dbbbcc94cde";
+    const sbcDepositContractAddress = "0x0B98057eA310F4d31F2a452B414647007d1645d9";
 
     /*
         Deploy Dappnode Incentive deposit contract
