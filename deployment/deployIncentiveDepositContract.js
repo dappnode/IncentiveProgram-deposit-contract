@@ -4,11 +4,12 @@ const path = require('path');
 async function main() {
     const deployer = (await ethers.getSigners())[0];
 
-    const sbcTokenAddress = "0x0000000000000000000000000000000000000001";
-    const sbcDepositContractAddress = "0x0000000000000000000000000000000000000002";
+    // xDai Address
+    const sbcTokenAddress = "0x722fc4DAABFEaff81b97894fC623f91814a1BF68";
+    const sbcDepositContractAddress = "0x6da1365c3baad9b6ccb76c2560523dbbbcc94cde";
 
     /*
-        Deployment Dappnode Incentive contract
+        Deploy Dappnode Incentive deposit contract
     */
     console.log('\n#######################');
     console.log('##### Deployment Proof of Efficiency #####');
@@ -17,9 +18,8 @@ async function main() {
     console.log('sbcDepositContract:', sbcDepositContractAddress);
 
     const IncentiveDepositContractFactory = await ethers.getContractFactory('IncentiveDepositContract')
-    incentiveDepositContract = await IncentiveDepositContractFactory.deploy();
+    incentiveDepositContract = await upgrades.deployProxy(IncentiveDepositContractFactory, [sbcTokenAddress, sbcDepositContractAddress])
     await incentiveDepositContract.deployed();
-    await incentiveDepositContract.initialize(sbcTokenAddress, sbcDepositContractAddress)
 
     console.log('#######################\n');
     console.log('Dappnode Incentive contract deployed to:', incentiveDepositContract.address);

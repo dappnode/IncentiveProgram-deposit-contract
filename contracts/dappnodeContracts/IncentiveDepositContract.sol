@@ -7,7 +7,7 @@ import "../gnosisContracts/SBCToken.sol";
 import "../gnosisContracts/SBCDepositContract.sol";
 
 /**
- * Incentive program that will allow some whitelisted users to make a free deposit on the SBC deposit contract
+ * Incentive program that will allow some whitelisted users to make a deposit on the SBC deposit contract without paying the deposit cost
  */
 contract IncentiveDepositContract is OwnableUpgradeable {
     SBCToken public sbcToken;
@@ -26,7 +26,7 @@ contract IncentiveDepositContract is OwnableUpgradeable {
 
     /**
      * @dev Deposit 32 mGNO into SBC depositContract in behalf of a whitelisted address
-     * @param data deposit datas that will pass it further to the SBC deposit contract.
+     * @param data Deposit data that will pass it further to the SBC deposit contract.
      */
     function claimIncentive(bytes calldata data) external onlyOwner {
         sbcToken.transferAndCall(
