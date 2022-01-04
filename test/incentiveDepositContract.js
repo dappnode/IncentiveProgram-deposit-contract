@@ -88,7 +88,7 @@ describe("IncentiveDepositContract", function () {
       .to.be.revertedWith("IncentiveDepositContract::claimIncentive:: incentive timeout")
 
     // add incentive to the deployer address
-    await incentiveDepositContract.addNewIncentive([deployer.address]);
+    await incentiveDepositContract.addBeneficiaries([deployer.address]);
 
     // should revert because contract do not have tokens
     await expect(incentiveDepositContract.claimIncentive(data))

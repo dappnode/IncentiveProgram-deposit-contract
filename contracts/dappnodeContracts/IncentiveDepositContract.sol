@@ -6,24 +6,35 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../gnosisContracts/SBCToken.sol";
 import "../gnosisContracts/SBCDepositContract.sol";
 import "../gnosisContracts/utils/Claimable.sol";
+import "../gnosisContracts/interfaces/IERC677.sol";
 
 /**
- * Incentive program that will allow some whitelisted users to make a deposit on the SBC deposit contract without paying the deposit cost
+ * Contract responsible for managing the dappnode incentive program
+ * THe beneficiaries can make a deposit to the SBC deposit contract without paying the deposit cost
  */
 contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
-    struct DepositData {
-        uint256 endTime;
-        bool isClaimed;
+    struct IncentiveData {
+        uint256 endTime; // UNIX time in which the incentive ends
+        bool isClaimed; // Indicate if the incentive has been claimed
     }
 
+    // Every deposit requires 32 ethers of mGNO tokens
     uint256 public constant DEPOSIT_AMOUNT = 32 ether;
-    uint256 public constant DURATION_INCENTIVE = 180 days;
 
-    SBCToken public sbcToken;
-    SBCDepositContract public sbcDepositContract;
+    // Duration of the incentive since it's assigned
+    uint256 public constant INCENTIVE_DURATION = 180 days;
+
+    // SBC token (mGNO)
+    IERC677 public sbcToken;
+
+    // SBC deposit contract
+    address public sbcDepositContract;
+
+    // Number of validator that are assigned to every beneficiary
     uint256 public validatorNum;
 
-    mapping(address => DepositData) public addressToDeposit;
+    // Mapping of beneficiaries to their respective incentive data
+    mapping(address => IncentiveData) public addressToDeposit;
 
     /**
      * @dev Emitted when a incentive is claimed
@@ -36,18 +47,18 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
     event NewIncentive();
 
     /**
-     * @dev Emitted when a incentive is cancelated
+     * @dev Emitted when a incentive is cancel
      */
     event CancelIncentive(address indexed recipient);
 
     /**
-     * @dev Emitted when a incentive is cancelated
+     * @dev Emitted when a the validator number is updated
      */
     event SetValidatorNum(uint256 newValidatorNum);
 
     function initialize(
-        SBCToken _sbcToken,
-        SBCDepositContract _sbcDepositContract,
+        IERC677 _sbcToken,
+        address _sbcDepositContract,
         uint256 _validatorNum
     ) public initializer {
         sbcToken = _sbcToken;
@@ -57,13 +68,12 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
     }
 
     /**
-     * @dev Deposit 32 mGNO into SBC depositContract in behalf of a whitelisted address
+     * @dev Allows a beneficiary to claim his incentive, the beneficiary provide the deposit data and the contract pay the deposit cost on his behalf
      * @param data Deposit data that will pass it further to the SBC deposit contract.
      */
     function claimIncentive(bytes calldata data) external {
-        uint256 count = data.length / 176;
         require(
-            count == validatorNum,
+            data.length == validatorNum * 176 + 32,
             "IncentiveDepositContract::claimIncentive:: incorrect deposit data length"
         );
 
@@ -77,12 +87,10 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
             "IncentiveDepositContract::claimIncentive:: incentive timeout"
         );
 
-        // set the nullifier
         addressToDeposit[msg.sender].isClaimed = true;
 
-        // call the deposit contract
         sbcToken.transferAndCall(
-            address(sbcDepositContract),
+            sbcDepositContract,
             DEPOSIT_AMOUNT * validatorNum,
             data
         );
@@ -91,21 +99,27 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
     }
 
     /**
-     * @dev Deposit 32 mGNO into SBC depositContract in behalf of a whitelisted address
-     * @param addressArray Deposit data that will pass it further to the SBC deposit contract.
+     * @dev Add address to the incentive program.
+     * Only owner can call this method.
+     * @param addressArray Array of addresses
      */
-    function addNewIncentive(address[] memory addressArray) external onlyOwner {
-        uint256 incentiveEndTime = block.timestamp + DURATION_INCENTIVE;
+    function addBeneficiaries(address[] memory addressArray)
+        external
+        onlyOwner
+    {
+        uint256 incentiveEndTime = block.timestamp + INCENTIVE_DURATION;
 
         for (uint256 i = 0; i < addressArray.length; i++) {
             addressToDeposit[addressArray[i]].endTime = incentiveEndTime;
         }
+
         emit NewIncentive();
     }
 
     /**
-     * @dev Deposit 32 mGNO into SBC depositContract in behalf of a whitelisted address
-     * @param recipient Deposit data that will pass it further to the SBC deposit contract.
+     * @dev Allows to cancel an incentive to some address
+     * Only owner can call this method.
+     * @param recipient Recipient
      */
     function cancelIncentive(address recipient) external onlyOwner {
         addressToDeposit[recipient].isClaimed = true;
@@ -114,11 +128,13 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
     }
 
     /**
-     * @dev Deposit 32 mGNO into SBC depositContract in behalf of a whitelisted address
-     * @param newValidatorNum Deposit data that will pass it further to the SBC deposit contract.
+     * @dev Allows to set a new validator number
+     * Only owner can call this method.
+     * @param newValidatorNum New validator number.
      */
     function setValidatorNum(uint256 newValidatorNum) external onlyOwner {
         validatorNum = newValidatorNum;
+
         emit SetValidatorNum(newValidatorNum);
     }
 
