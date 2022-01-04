@@ -7,8 +7,9 @@ describe("IncentiveDepositContract", function () {
   let SBCTokenContract;
   let SBCDepositContract;
 
-  const validatorNum = 1;
+  const validatorNumDefault = 1;
   const depositAmount = ethers.utils.parseEther("32");
+  const incentiveDuration = 60 * 60 * 24 * 180;// 180 days
 
   const deposit = {
     pubkey: '0x85e52247873439b180471ceb94ef9966c2cef1c194cc926e7d6494fecccbcdc076bcd751309f174dd8b7e21402c85ac0',
@@ -24,6 +25,10 @@ describe("IncentiveDepositContract", function () {
     // load signers
     const signers = await ethers.getSigners();
     deployer = signers[0];
+
+    beneficiary1 = signers[1];
+    beneficiary2 = signers[2];
+    beneficiary3 = signers[3];
 
     // Gnosis deposit contact deployment without wrapper, deployer will be the admin of the SCB token
     const SBCDepositContractProxyFactory = await ethers.getContractFactory('SBCDepositContractProxy')
@@ -41,7 +46,7 @@ describe("IncentiveDepositContract", function () {
     // Dappnode incentive deposit contract
     const IncentiveDepositContractFactory = await ethers.getContractFactory('IncentiveDepositContract')
     incentiveDepositContract = await IncentiveDepositContractFactory.deploy()
-    await incentiveDepositContract.initialize(SBCTokenContract.address, SBCDepositContract.address, validatorNum)
+    await incentiveDepositContract.initialize(SBCTokenContract.address, SBCDepositContract.address, validatorNumDefault)
 
 
     // Set minter to the deployment address
@@ -51,10 +56,67 @@ describe("IncentiveDepositContract", function () {
   it("should check the initialized variables", async () => {
     expect(await incentiveDepositContract.sbcToken()).to.be.equal(SBCTokenContract.address);
     expect(await incentiveDepositContract.sbcDepositContract()).to.be.equal(SBCDepositContract.address);
+    expect(await incentiveDepositContract.validatorNum()).to.be.equal(validatorNumDefault);
     expect(await incentiveDepositContract.DEPOSIT_AMOUNT()).to.be.equal(depositAmount);
+    expect(await incentiveDepositContract.INCENTIVE_DURATION()).to.be.equal(incentiveDuration);
+  });
+
+  it("should be able to add beneficiaries and cancel incentives", async () => {
+    const beneficiaryArray = [beneficiary1.address, beneficiary2.address, beneficiary3.address];
+
+    // Check beneficiary data is empty
+    for (let i = 0; i < beneficiaryArray.length; i++) {
+      const currentAddress = beneficiaryArray[i];
+      const incentiveData = await incentiveDepositContract.addressToIncentive(currentAddress);
+      expect(incentiveData.isClaimed).to.be.equal(false);
+      expect(incentiveData.endTime).to.be.equal(0);
+    }
+
+    // Add beneficiarys to the incentive program
+    await expect(incentiveDepositContract.addBeneficiaries(beneficiaryArray))
+      .to.emit(incentiveDepositContract, "NewIncentive");
+
+    const timestamp = (await ethers.provider.getBlock()).timestamp
+    const endIncentiveTime = timestamp + incentiveDuration;
+
+    // Check beneficiary data is fullfilled
+    for (let i = 0; i < beneficiaryArray.length; i++) {
+      const currentAddress = beneficiaryArray[i];
+      const incentiveData = await incentiveDepositContract.addressToIncentive(currentAddress);
+      expect(incentiveData.isClaimed).to.be.equal(false);
+      expect(incentiveData.endTime).to.be.equal(endIncentiveTime);
+    };
+
+    // Cancel an incentive
+    const cancelAddress = beneficiary1.address;
+    await expect(incentiveDepositContract.cancelIncentive(cancelAddress))
+      .to.emit(incentiveDepositContract, "CancelIncentive")
+      .withArgs(cancelAddress);
+
+    const incentiveData = await incentiveDepositContract.addressToIncentive(cancelAddress);
+    expect(incentiveData.isClaimed).to.be.equal(true);
+    expect(incentiveData.endTime).to.be.equal(endIncentiveTime);
+
+    // should revert because the incentive is canceled
+    const data = ethers.utils.hexConcat([deposit.withdrawal_credentials, deposit.pubkey, deposit.signature, deposit.deposit_data_root])
+    await expect(incentiveDepositContract.connect(beneficiary1).claimIncentive(data))
+      .to.be.revertedWith("IncentiveDepositContract::claimIncentive:: incentive already claimed");
+  });
+
+  it("should be able to update the validator number", async () => {
+    expect(await incentiveDepositContract.validatorNum()).to.be.equal(validatorNumDefault);
+
+    // update validator number
+    const newValidatorNum = 4;
+    await expect(incentiveDepositContract.setValidatorNum(newValidatorNum))
+      .to.emit(incentiveDepositContract, "SetValidatorNum")
+      .withArgs(newValidatorNum);
+
+    expect(await incentiveDepositContract.validatorNum()).to.be.equal(newValidatorNum);
   });
 
   it("should be able to make a deposit using transferAndCall", async () => {
+    // This test is useffull for check tha the deposit data is well constructed and the test deployment works
     const data = ethers.utils.hexConcat([deposit.withdrawal_credentials, deposit.pubkey, deposit.signature, deposit.deposit_data_root])
     const invalidData = ethers.utils.hexConcat([deposit.withdrawal_credentials, deposit.pubkey, deposit.signature, invalidDataRoot])
 
@@ -79,7 +141,8 @@ describe("IncentiveDepositContract", function () {
     expect(await SBCTokenContract.balanceOf(deployer.address)).to.be.equal(0);
   });
 
-  it("should be able to make a deposit using claimIncentive", async () => {
+
+  it("should be able to claim incentive", async () => {
     const data = ethers.utils.hexConcat([deposit.withdrawal_credentials, deposit.pubkey, deposit.signature, deposit.deposit_data_root])
     const invalidData = ethers.utils.hexConcat([deposit.withdrawal_credentials, deposit.pubkey, deposit.signature, invalidDataRoot])
 
@@ -87,14 +150,22 @@ describe("IncentiveDepositContract", function () {
     await expect(incentiveDepositContract.claimIncentive(data))
       .to.be.revertedWith("IncentiveDepositContract::claimIncentive:: incentive timeout")
 
-    // add incentive to the deployer address
-    await incentiveDepositContract.addBeneficiaries([deployer.address]);
+    // add deployer address to the incentive program
+    await expect(incentiveDepositContract.addBeneficiaries([deployer.address]))
+      .to.emit(incentiveDepositContract, "NewIncentive");
+
+    // Check the incentive data
+    const currentTimestamp = (await ethers.provider.getBlock()).timestamp
+    const endIncentiveTime = currentTimestamp + incentiveDuration;
+    const incentiveData = await incentiveDepositContract.addressToIncentive(deployer.address);
+    expect(incentiveData.isClaimed).to.be.equal(false);
+    expect(incentiveData.endTime).to.be.equal(endIncentiveTime);
 
     // should revert because contract do not have tokens
     await expect(incentiveDepositContract.claimIncentive(data))
       .to.be.revertedWith("ERC20: transfer amount exceeds balance")
 
-    // mint tokens for the dappnode deposit contract
+    // mint tokens for the dappnode incentive deposit contract
     const initialTokens = depositAmount.mul(4);
     await SBCTokenContract.mint(incentiveDepositContract.address, initialTokens)
     expect(await SBCTokenContract.balanceOf(incentiveDepositContract.address)).to.be.equal(initialTokens);
@@ -104,7 +175,11 @@ describe("IncentiveDepositContract", function () {
       .to.be.revertedWith("DepositContract: reconstructed DepositData does not match supplied deposit_data_root")
 
     // should perform correctly a deposit
-    await incentiveDepositContract.claimIncentive(data)
+    await expect(incentiveDepositContract.claimIncentive(data))
+      .to.emit(incentiveDepositContract, "ClaimedIncentive")
+      .withArgs(deployer.address);
+
+    // Check into the deposit contract that everything goes ok, this values are from the gnosis deposit contract test
     expect(await SBCDepositContract.get_deposit_count()).to.be.equal('0x0100000000000000')
     expect(await SBCDepositContract.get_deposit_root()).to.be.equal('0x4e84f51e6b1cf47fd51d021635d791b9c99fe915990061a5a10390b9140e3592')
 
@@ -112,7 +187,30 @@ describe("IncentiveDepositContract", function () {
     await expect(incentiveDepositContract.claimIncentive(data))
       .to.be.revertedWith("IncentiveDepositContract::claimIncentive:: incentive already claimed")
 
+    // check balances
     expect(await SBCTokenContract.balanceOf(SBCDepositContract.address)).to.be.equal(depositAmount)
     expect(await SBCTokenContract.balanceOf(incentiveDepositContract.address)).to.be.equal(initialTokens.sub(depositAmount));
+
+    // check incentive data
+    const incentiveDataAfter = await incentiveDepositContract.addressToIncentive(deployer.address);
+    expect(incentiveDataAfter.isClaimed).to.be.equal(true);
+    expect(incentiveDataAfter.endTime).to.be.equal(endIncentiveTime);
+  });
+
+  it("should be able to claim tokens", async () => {
+    const incentiveDepositAddress = incentiveDepositContract.address;
+
+    // mint tokens to the deposit contract
+    const mintTokens = ethers.utils.parseEther("10");
+    await SBCTokenContract.mint(incentiveDepositAddress, mintTokens)
+
+    expect(await SBCTokenContract.balanceOf(incentiveDepositAddress)).to.be.equal(mintTokens);
+
+    // claim tokens from the deposit contract
+    await incentiveDepositContract.claimTokens(SBCTokenContract.address, deployer.address);
+
+    // check balances
+    expect(await SBCTokenContract.balanceOf(SBCDepositContract.address)).to.be.equal(0)
+    expect(await SBCTokenContract.balanceOf(deployer.address)).to.be.equal(mintTokens);
   });
 });

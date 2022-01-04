@@ -3,14 +3,12 @@
 pragma solidity 0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "../gnosisContracts/SBCToken.sol";
-import "../gnosisContracts/SBCDepositContract.sol";
 import "../gnosisContracts/utils/Claimable.sol";
 import "../gnosisContracts/interfaces/IERC677.sol";
 
 /**
  * Contract responsible for managing the dappnode incentive program
- * THe beneficiaries can make a deposit to the SBC deposit contract without paying the deposit cost
+ * The beneficiaries can make a deposit to the SBC deposit contract without paying the deposit cost
  */
 contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
     struct IncentiveData {
@@ -34,7 +32,7 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
     uint256 public validatorNum;
 
     // Mapping of beneficiaries to their respective incentive data
-    mapping(address => IncentiveData) public addressToDeposit;
+    mapping(address => IncentiveData) public addressToIncentive;
 
     /**
      * @dev Emitted when a incentive is claimed
@@ -78,16 +76,16 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
         );
 
         require(
-            addressToDeposit[msg.sender].isClaimed == false,
+            addressToIncentive[msg.sender].isClaimed == false,
             "IncentiveDepositContract::claimIncentive:: incentive already claimed"
         );
 
         require(
-            addressToDeposit[msg.sender].endTime >= block.timestamp,
+            addressToIncentive[msg.sender].endTime >= block.timestamp,
             "IncentiveDepositContract::claimIncentive:: incentive timeout"
         );
 
-        addressToDeposit[msg.sender].isClaimed = true;
+        addressToIncentive[msg.sender].isClaimed = true;
 
         sbcToken.transferAndCall(
             sbcDepositContract,
@@ -99,7 +97,8 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
     }
 
     /**
-     * @dev Add address to the incentive program.
+     * @dev Add an address to the incentive program.
+     * Also can be used to extend a incentive duration of an address.
      * Only owner can call this method.
      * @param addressArray Array of addresses
      */
@@ -110,19 +109,19 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
         uint256 incentiveEndTime = block.timestamp + INCENTIVE_DURATION;
 
         for (uint256 i = 0; i < addressArray.length; i++) {
-            addressToDeposit[addressArray[i]].endTime = incentiveEndTime;
+            addressToIncentive[addressArray[i]].endTime = incentiveEndTime;
         }
 
         emit NewIncentive();
     }
 
     /**
-     * @dev Allows to cancel an incentive to some address
+     * @dev Allows to cancel an incentive for a specific address
      * Only owner can call this method.
      * @param recipient Recipient
      */
     function cancelIncentive(address recipient) external onlyOwner {
-        addressToDeposit[recipient].isClaimed = true;
+        addressToIncentive[recipient].isClaimed = true;
 
         emit CancelIncentive(recipient);
     }
@@ -141,8 +140,8 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
     /**
      * @dev Allows to transfer any token from this contract.
      * Only owner can call this method.
-     * @param _token address of the token, if it is not provided (0x00..00), native coins will be transferred.
-     * @param _to address that will receive the tokens from this contract.
+     * @param _token Address of the token, if it is not provided (0x00..00), native coins will be transferred.
+     * @param _to Asdress that will receive the tokens from this contract.
      */
     function claimTokens(address _token, address _to) external onlyOwner {
         _claimValues(_token, _to);
