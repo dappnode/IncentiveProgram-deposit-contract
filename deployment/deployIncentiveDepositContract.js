@@ -8,6 +8,7 @@ async function main() {
     const sbcTokenAddress = "0x722fc4DAABFEaff81b97894fC623f91814a1BF68";
     const sbcDepositContractAddress = "0x0B98057eA310F4d31F2a452B414647007d1645d9";
     const validatorNumDefault = 4;
+    const incentiveDurationDefault = 60 * 60 * 24 * 30; // 30 days
 
     /*
         Deploy Dappnode Incentive deposit contract
@@ -17,9 +18,11 @@ async function main() {
     console.log('#######################');
     console.log('sbcToken:', sbcTokenAddress);
     console.log('sbcDepositContract:', sbcDepositContractAddress);
+    console.log('validatorNum:', validatorNumDefault);
+    console.log('incentiveDuration:', incentiveDurationDefault);
 
     const IncentiveDepositContractFactory = await ethers.getContractFactory('IncentiveDepositContract')
-    incentiveDepositContract = await upgrades.deployProxy(IncentiveDepositContractFactory, [sbcTokenAddress, sbcDepositContractAddress, validatorNumDefault])
+    incentiveDepositContract = await upgrades.deployProxy(IncentiveDepositContractFactory, [sbcTokenAddress, sbcDepositContractAddress, validatorNumDefault, incentiveDurationDefault])
     await incentiveDepositContract.deployed();
 
     console.log('#######################\n');
@@ -31,8 +34,7 @@ async function main() {
     console.log('sbcToken:', await incentiveDepositContract.sbcToken());
     console.log('sbcDepositContract:', await incentiveDepositContract.sbcDepositContract());
     console.log('validatorNum:', await incentiveDepositContract.validatorNum());
-    console.log('DEPOSIT_AMOUNT:', await incentiveDepositContract.DEPOSIT_AMOUNT());
-    console.log('INCENTIVE_DURATION:', await incentiveDepositContract.INCENTIVE_DURATION());
+    console.log('incentiveDuration:', await incentiveDepositContract.incentiveDuration());
 }
 
 main().catch((e) => {

@@ -16,11 +16,11 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
         bool isClaimed; // Indicate if the incentive has been claimed
     }
 
-    // Every deposit requires 32 ethers of mGNO tokens
+    // Every deposit requires 32 mGNO tokens
     uint256 public constant DEPOSIT_AMOUNT = 32 ether;
 
     // Duration of the incentive since it's assigned
-    uint256 public constant INCENTIVE_DURATION = 180 days;
+    uint256 public incentiveDuration;
 
     // SBC token (mGNO)
     IERC677 public sbcToken;
@@ -54,14 +54,21 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
      */
     event SetValidatorNum(uint256 newValidatorNum);
 
+    /**
+     * @dev Emitted when a the incentive duration is updated
+     */
+    event SetIncentiveDuration(uint256 newIncentiveDuration);
+
     function initialize(
         IERC677 _sbcToken,
         address _sbcDepositContract,
-        uint256 _validatorNum
+        uint256 _validatorNum,
+        uint256 _incentiveDuration
     ) public initializer {
         sbcToken = _sbcToken;
         sbcDepositContract = _sbcDepositContract;
         validatorNum = _validatorNum;
+        incentiveDuration = _incentiveDuration;
         __Ownable_init();
     }
 
@@ -97,7 +104,7 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
     }
 
     /**
-     * @dev Add an address to the incentive program.
+     * @dev Add addresses to the incentive program.
      * Also can be used to extend a incentive duration of an address.
      * Only owner can call this method.
      * @param addressArray Array of addresses
@@ -106,7 +113,7 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
         external
         onlyOwner
     {
-        uint256 incentiveEndTime = block.timestamp + INCENTIVE_DURATION;
+        uint256 incentiveEndTime = block.timestamp + incentiveDuration;
 
         for (uint256 i = 0; i < addressArray.length; i++) {
             addressToIncentive[addressArray[i]].endTime = incentiveEndTime;
@@ -116,7 +123,7 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
     }
 
     /**
-     * @dev Allows to cancel an incentive for a specific address
+     * @dev Allows to cancel an incentive for a specific address.
      * Only owner can call this method.
      * @param recipient Recipient
      */
@@ -127,7 +134,21 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
     }
 
     /**
-     * @dev Allows to set a new validator number
+     * @dev Allows to set the incentive duration.
+     * Only owner can call this method.
+     * @param newIncentiveDuration New incentive duration.
+     */
+    function setIncentiveDuration(uint256 newIncentiveDuration)
+        external
+        onlyOwner
+    {
+        incentiveDuration = newIncentiveDuration;
+
+        emit SetIncentiveDuration(newIncentiveDuration);
+    }
+
+    /**
+     * @dev Allows to set a new validator number.
      * Only owner can call this method.
      * @param newValidatorNum New validator number.
      */

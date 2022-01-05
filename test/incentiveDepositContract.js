@@ -7,9 +7,9 @@ describe("IncentiveDepositContract", function () {
   let SBCTokenContract;
   let SBCDepositContract;
 
+  const incentiveDurationDefault = 60 * 60 * 24 * 30; // 30 days
   const validatorNumDefault = 1;
   const depositAmount = ethers.utils.parseEther("32");
-  const incentiveDuration = 60 * 60 * 24 * 180;// 180 days
 
   const deposit = {
     pubkey: '0x85e52247873439b180471ceb94ef9966c2cef1c194cc926e7d6494fecccbcdc076bcd751309f174dd8b7e21402c85ac0',
@@ -54,7 +54,7 @@ describe("IncentiveDepositContract", function () {
     // Dappnode incentive deposit contract
     const IncentiveDepositContractFactory = await ethers.getContractFactory('IncentiveDepositContract')
     incentiveDepositContract = await IncentiveDepositContractFactory.deploy()
-    await incentiveDepositContract.initialize(SBCTokenContract.address, SBCDepositContract.address, validatorNumDefault)
+    await incentiveDepositContract.initialize(SBCTokenContract.address, SBCDepositContract.address, validatorNumDefault, incentiveDurationDefault)
 
 
     // Set minter to the deployment address
@@ -66,7 +66,7 @@ describe("IncentiveDepositContract", function () {
     expect(await incentiveDepositContract.sbcDepositContract()).to.be.equal(SBCDepositContract.address);
     expect(await incentiveDepositContract.validatorNum()).to.be.equal(validatorNumDefault);
     expect(await incentiveDepositContract.DEPOSIT_AMOUNT()).to.be.equal(depositAmount);
-    expect(await incentiveDepositContract.INCENTIVE_DURATION()).to.be.equal(incentiveDuration);
+    expect(await incentiveDepositContract.incentiveDuration()).to.be.equal(incentiveDurationDefault);
   });
 
   it("should be able to add and cancel incentives", async () => {
@@ -85,7 +85,7 @@ describe("IncentiveDepositContract", function () {
       .to.emit(incentiveDepositContract, "NewIncentive");
 
     const timestamp = (await ethers.provider.getBlock()).timestamp
-    const endIncentiveTime = timestamp + incentiveDuration;
+    const endIncentiveTime = timestamp + incentiveDurationDefault;
 
     // Check beneficiary data is fullfilled
     for (let i = 0; i < beneficiaryArray.length; i++) {
@@ -131,6 +131,18 @@ describe("IncentiveDepositContract", function () {
     expect(await incentiveDepositContract.validatorNum()).to.be.equal(newValidatorNum);
   });
 
+  it("should be able to update the incentive duration", async () => {
+    expect(await incentiveDepositContract.incentiveDuration()).to.be.equal(incentiveDurationDefault);
+
+    // update incentive duration
+    const newIncentiveDuration = 4;
+    await expect(incentiveDepositContract.setIncentiveDuration(newIncentiveDuration))
+      .to.emit(incentiveDepositContract, "SetIncentiveDuration")
+      .withArgs(newIncentiveDuration);
+
+    expect(await incentiveDepositContract.incentiveDuration()).to.be.equal(newIncentiveDuration);
+  });
+
   it("should be able to make a deposit using transferAndCall", async () => {
     // This test is useffull for check tha the deposit data is well constructed and the test deployment works
     const data = ethers.utils.hexConcat([deposit.withdrawal_credentials, deposit.pubkey, deposit.signature, deposit.deposit_data_root])
@@ -172,7 +184,7 @@ describe("IncentiveDepositContract", function () {
 
     // Check the incentive data
     const currentTimestamp = (await ethers.provider.getBlock()).timestamp
-    const endIncentiveTime = currentTimestamp + incentiveDuration;
+    const endIncentiveTime = currentTimestamp + incentiveDurationDefault;
     const incentiveData = await incentiveDepositContract.addressToIncentive(deployer.address);
     expect(incentiveData.isClaimed).to.be.equal(false);
     expect(incentiveData.endTime).to.be.equal(endIncentiveTime);
