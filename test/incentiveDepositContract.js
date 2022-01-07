@@ -96,26 +96,36 @@ describe("IncentiveDepositContract", function () {
     };
 
     // Cancel an incentive
-    const cancelAddress = beneficiary1.address;
+    const cancelAddress = [beneficiary1.address, beneficiary2.address];
     await expect(incentiveDepositContract.cancelIncentive(cancelAddress))
-      .to.emit(incentiveDepositContract, "CancelIncentive")
-      .withArgs(cancelAddress);
+      .to.emit(incentiveDepositContract, "CancelIncentive");
 
-    const incentiveData = await incentiveDepositContract.addressToIncentive(cancelAddress);
-    expect(incentiveData.isClaimed).to.be.equal(true);
-    expect(incentiveData.endTime).to.be.equal(endIncentiveTime);
+    // Check beneficiary data is fullfilled
+    for (let i = 0; i < cancelAddress.length; i++) {
+      const currentAddress = cancelAddress[i];
+      const incentiveData = await incentiveDepositContract.addressToIncentive(currentAddress);
+      expect(incentiveData.isClaimed).to.be.equal(true);
+      expect(incentiveData.endTime).to.be.equal(endIncentiveTime);
+    };
 
     // should revert because the incentive is canceled
     const data = ethers.utils.hexConcat([deposit.withdrawal_credentials, deposit.pubkey, deposit.signature, deposit.deposit_data_root])
     await expect(incentiveDepositContract.connect(beneficiary1).claimIncentive(data))
       .to.be.revertedWith("IncentiveDepositContract::claimIncentive:: incentive already claimed");
 
+    await expect(incentiveDepositContract.connect(beneficiary2).claimIncentive(data))
+      .to.be.revertedWith("IncentiveDepositContract::claimIncentive:: incentive already claimed");
+
     // advance blocks until the enc of the incentive
     await ethers.provider.send("evm_increaseTime", [endIncentiveTime + 1])
     await ethers.provider.send("evm_mine")
 
+    const incentiveDataB3 = await incentiveDepositContract.addressToIncentive(beneficiary3.address);
+    expect(incentiveDataB3.isClaimed).to.be.equal(false);
+    expect(incentiveDataB3.endTime).to.be.equal(endIncentiveTime);
+
     // should revert because the incentive is timeout
-    await expect(incentiveDepositContract.connect(beneficiary2).claimIncentive(data))
+    await expect(incentiveDepositContract.connect(beneficiary3).claimIncentive(data))
       .to.be.revertedWith("IncentiveDepositContract::claimIncentive:: incentive timeout");
   });
 

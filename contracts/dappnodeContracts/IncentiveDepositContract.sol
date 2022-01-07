@@ -3,14 +3,17 @@
 pragma solidity 0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "../gnosisContracts/utils/Claimable.sol";
 import "../gnosisContracts/interfaces/IERC677.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
 /**
  * Contract responsible for managing the dappnode incentive program
  * The beneficiaries can make a deposit to the SBC deposit contract without paying the deposit cost
  */
-contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
+contract IncentiveDepositContract is OwnableUpgradeable {
+    using SafeERC20Upgradeable for IERC20Upgradeable;
+
     struct IncentiveData {
         uint256 endTime; // UNIX time in which the incentive ends
         bool isClaimed; // Indicate if the incentive has been claimed
@@ -47,7 +50,7 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
     /**
      * @dev Emitted when a incentive is cancel
      */
-    event CancelIncentive(address indexed recipient);
+    event CancelIncentive();
 
     /**
      * @dev Emitted when a the validator number is updated
@@ -123,14 +126,16 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
     }
 
     /**
-     * @dev Allows to cancel an incentive for a specific address.
+     * @dev Allows to cancel an incentive for multiple addresses.
      * Only owner can call this method.
-     * @param recipient Recipient
+     * @param addressArray Array of addresses.
      */
-    function cancelIncentive(address recipient) external onlyOwner {
-        addressToIncentive[recipient].isClaimed = true;
+    function cancelIncentive(address[] memory addressArray) external onlyOwner {
+        for (uint256 i = 0; i < addressArray.length; i++) {
+            addressToIncentive[addressArray[i]].isClaimed = true;
+        }
 
-        emit CancelIncentive(recipient);
+        emit CancelIncentive();
     }
 
     /**
@@ -161,10 +166,14 @@ contract IncentiveDepositContract is OwnableUpgradeable, Claimable {
     /**
      * @dev Allows to transfer any token from this contract.
      * Only owner can call this method.
-     * @param _token Address of the token, if it is not provided (0x00..00), native coins will be transferred.
-     * @param _to Asdress that will receive the tokens from this contract.
+     * @param _token Address of the token.
+     * @param _to Adress that will receive the tokens from this contract.
      */
-    function claimTokens(address _token, address _to) external onlyOwner {
-        _claimValues(_token, _to);
+    function claimTokens(IERC20Upgradeable _token, address _to)
+        external
+        onlyOwner
+    {
+        uint256 balance = _token.balanceOf(address(this));
+        _token.safeTransfer(_to, balance);
     }
 }
