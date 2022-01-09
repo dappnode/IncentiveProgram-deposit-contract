@@ -3,7 +3,7 @@
 pragma solidity 0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "../gnosisContracts/interfaces/IERC677.sol";
+import "../../gnosisContracts/interfaces/IERC677.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
@@ -11,7 +11,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
  * Contract responsible for managing the dappnode incentive program
  * The beneficiaries can make a deposit to the SBC deposit contract without paying the deposit cost
  */
-contract IncentiveDepositContract is OwnableUpgradeable {
+contract IncentiveDepositContract_v0 is OwnableUpgradeable {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     struct IncentiveData {
@@ -46,11 +46,6 @@ contract IncentiveDepositContract is OwnableUpgradeable {
      * @dev Emitted when a new incentive is addded
      */
     event NewIncentive();
-
-    /**
-     * @dev Emitted when a incentive is renewed
-     */
-    event RenewIncentive();
 
     /**
      * @dev Emitted when a incentive is cancel
@@ -113,6 +108,7 @@ contract IncentiveDepositContract is OwnableUpgradeable {
 
     /**
      * @dev Add addresses to the incentive program.
+     * Also can be used to extend a incentive duration of an address.
      * Only owner can call this method.
      * @param addressArray Array of addresses
      */
@@ -123,36 +119,10 @@ contract IncentiveDepositContract is OwnableUpgradeable {
         uint256 incentiveEndTime = block.timestamp + incentiveDuration;
 
         for (uint256 i = 0; i < addressArray.length; i++) {
-            IncentiveData storage incentive = addressToIncentive[
-                addressArray[i]
-            ];
-            if (incentive.endTime == 0 && incentive.isClaimed == false)
-                incentive.endTime = incentiveEndTime;
+            addressToIncentive[addressArray[i]].endTime = incentiveEndTime;
         }
 
         emit NewIncentive();
-    }
-
-    /**
-     * @dev Renew addresses to the incentive program.
-     * Only owner can call this method.
-     * @param addressArray Array of addresses
-     */
-    function renewBeneficiaries(address[] memory addressArray)
-        external
-        onlyOwner
-    {
-        uint256 incentiveEndTime = block.timestamp + incentiveDuration;
-
-        for (uint256 i = 0; i < addressArray.length; i++) {
-            IncentiveData storage incentive = addressToIncentive[
-                addressArray[i]
-            ];
-            if (incentive.endTime != 0 && incentive.isClaimed == false)
-                addressToIncentive[addressArray[i]].endTime = incentiveEndTime;
-        }
-
-        emit RenewIncentive();
     }
 
     /**

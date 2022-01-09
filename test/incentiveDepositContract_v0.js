@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { ethers, upgrades } = require("hardhat");
 
-describe("IncentiveDepositContract", function () {
+describe("IncentiveDepositContract_v0", function () {
   let deployer;
 
   let SBCTokenContract;
@@ -52,7 +52,7 @@ describe("IncentiveDepositContract", function () {
 
 
     // Dappnode incentive deposit contract
-    const IncentiveDepositContractFactory = await ethers.getContractFactory('IncentiveDepositContract')
+    const IncentiveDepositContractFactory = await ethers.getContractFactory('IncentiveDepositContract_v0')
     incentiveDepositContract = await IncentiveDepositContractFactory.deploy()
     await incentiveDepositContract.initialize(SBCTokenContract.address, SBCDepositContract.address, validatorNumDefault, incentiveDurationDefault)
 
@@ -127,93 +127,6 @@ describe("IncentiveDepositContract", function () {
     // should revert because the incentive is timeout
     await expect(incentiveDepositContract.connect(beneficiary3).claimIncentive(data))
       .to.be.revertedWith("IncentiveDepositContract::claimIncentive:: incentive timeout");
-  });
-
-  it("should be able to renew incentives", async () => {
-    const beneficiaryArray = [beneficiary1.address, beneficiary2.address, beneficiary3.address];
-
-    // Check beneficiary data is empty
-    for (let i = 0; i < beneficiaryArray.length; i++) {
-      const currentAddress = beneficiaryArray[i];
-      const incentiveData = await incentiveDepositContract.addressToIncentive(currentAddress);
-      expect(incentiveData.isClaimed).to.be.equal(false);
-      expect(incentiveData.endTime).to.be.equal(0);
-    }
-
-    // Try to renew beneficiarys that are not added to the incentive program
-    await expect(incentiveDepositContract.renewBeneficiaries(beneficiaryArray))
-      .to.emit(incentiveDepositContract, "RenewIncentive");
-
-    // Does not change anything
-    for (let i = 0; i < beneficiaryArray.length; i++) {
-      const currentAddress = beneficiaryArray[i];
-      const incentiveData = await incentiveDepositContract.addressToIncentive(currentAddress);
-      expect(incentiveData.isClaimed).to.be.equal(false);
-      expect(incentiveData.endTime).to.be.equal(0);
-    }
-
-    // Cancel an incentive
-    const cancelAddress = [beneficiary1.address];
-    await expect(incentiveDepositContract.cancelIncentive(cancelAddress))
-      .to.emit(incentiveDepositContract, "CancelIncentive");
-
-    // Add beneficiarys to the incentive program
-    await expect(incentiveDepositContract.addBeneficiaries(beneficiaryArray))
-      .to.emit(incentiveDepositContract, "NewIncentive");
-
-    const timestamp = (await ethers.provider.getBlock()).timestamp
-    const endIncentiveTime = timestamp + incentiveDurationDefault;
-
-    // Check beneficiary data is fullfilled and the cancel address is not udpated
-    for (let i = 0; i < beneficiaryArray.length; i++) {
-      const currentAddress = beneficiaryArray[i];
-      const incentiveData = await incentiveDepositContract.addressToIncentive(currentAddress);
-      if (cancelAddress.includes(currentAddress)) {
-        expect(incentiveData.isClaimed).to.be.equal(true);
-        expect(incentiveData.endTime).to.be.equal(0);
-      } else {
-        expect(incentiveData.isClaimed).to.be.equal(false);
-        expect(incentiveData.endTime).to.be.equal(endIncentiveTime);
-      }
-    }
-
-    // Try to extend the duration using addBeneficiaries
-    await expect(incentiveDepositContract.addBeneficiaries(beneficiaryArray))
-      .to.emit(incentiveDepositContract, "NewIncentive");
-
-    // Nothing has changed
-    for (let i = 0; i < beneficiaryArray.length; i++) {
-      const currentAddress = beneficiaryArray[i];
-      const incentiveData = await incentiveDepositContract.addressToIncentive(currentAddress);
-      if (cancelAddress.includes(currentAddress)) {
-        expect(incentiveData.isClaimed).to.be.equal(true);
-        expect(incentiveData.endTime).to.be.equal(0);
-      } else {
-        expect(incentiveData.isClaimed).to.be.equal(false);
-        expect(incentiveData.endTime).to.be.equal(endIncentiveTime);
-      }
-    }
-
-    // Try to extend the duration using renewBeneficiaries
-    await expect(incentiveDepositContract.renewBeneficiaries(beneficiaryArray))
-      .to.emit(incentiveDepositContract, "RenewIncentive");
-
-    const timestamp2 = (await ethers.provider.getBlock()).timestamp
-    const endIncentiveTime2 = timestamp2 + incentiveDurationDefault;
-    expect(endIncentiveTime2).to.be.greaterThan(endIncentiveTime);
-
-    // Check beneficiary data is updated and the cancel address is not
-    for (let i = 0; i < beneficiaryArray.length; i++) {
-      const currentAddress = beneficiaryArray[i];
-      const incentiveData = await incentiveDepositContract.addressToIncentive(currentAddress);
-      if (cancelAddress.includes(currentAddress)) {
-        expect(incentiveData.isClaimed).to.be.equal(true);
-        expect(incentiveData.endTime).to.be.equal(0);
-      } else {
-        expect(incentiveData.isClaimed).to.be.equal(false);
-        expect(incentiveData.endTime).to.be.equal(endIncentiveTime2);
-      }
-    }
   });
 
   it("should be able to update the validator number", async () => {
