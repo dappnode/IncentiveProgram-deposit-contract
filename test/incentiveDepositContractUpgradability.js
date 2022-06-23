@@ -1,11 +1,12 @@
 const { expect } = require("chai");
 const { ethers, upgrades } = require("hardhat");
 
-describe("IncentiveDepositContract", function () {
+describe("IncentiveDepositContract_v0 upgradaded", function () {
   let deployer;
 
   let SBCTokenContract;
   let SBCDepositContract;
+  let incentiveDepositContract;
 
   const incentiveDurationDefault = 60 * 60 * 24 * 30; // 30 days
   const validatorNumDefault = 1;
@@ -52,13 +53,28 @@ describe("IncentiveDepositContract", function () {
 
 
     // Dappnode incentive deposit contract
-    const IncentiveDepositContractFactory = await ethers.getContractFactory('IncentiveDepositContract')
-    incentiveDepositContract = await IncentiveDepositContractFactory.deploy()
-    await incentiveDepositContract.initialize(SBCTokenContract.address, SBCDepositContract.address, validatorNumDefault, incentiveDurationDefault)
-
+    const IncentiveDepositContractFactoryV0 = await ethers.getContractFactory('IncentiveDepositContract_v0')
+    const incentiveDepositContractV0 = await upgrades.deployProxy(IncentiveDepositContractFactoryV0, [SBCTokenContract.address, SBCDepositContract.address, validatorNumDefault, incentiveDurationDefault])
+    await incentiveDepositContractV0.deployed();
 
     // Set minter to the deployment address
     await SBCTokenContract.setMinter(deployer.address)
+
+    // Upgrade the contract
+    const incentiveDepositContractFactory = await ethers.getContractFactory("IncentiveDepositContract");
+    incentiveDepositContract = incentiveDepositContractFactory.attach(incentiveDepositContractV0.address);
+
+    // Check that is the v0 contract
+    await expect(incentiveDepositContract.renewBeneficiaries([beneficiary1.address])).to.be.reverted;
+
+    // Upgrade the contract
+    await upgrades.upgradeProxy(incentiveDepositContractV0.address, incentiveDepositContractFactory);
+
+    // Check that the contract is upgraded
+    await expect(incentiveDepositContract.renewBeneficiaries([beneficiary1.address]))
+      .to.emit(incentiveDepositContract, "RenewIncentive");
+
+    // Should pass the rest of the test correctly after being upgraded
   });
 
   it("should check the initialized variables", async () => {
