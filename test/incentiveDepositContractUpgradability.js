@@ -55,7 +55,7 @@ describe("IncentiveDepositContract_v0 upgradaded", function () {
 
 
     // Dappnode incentive deposit contract
-    const IncentiveDepositContractFactoryV0 = await ethers.getContractFactory('IncentiveDepositContract_v1')
+    const IncentiveDepositContractFactoryV0 = await ethers.getContractFactory('IncentiveDepositContract_v0')
     const incentiveDepositContractV0 = await upgrades.deployProxy(IncentiveDepositContractFactoryV0, [SBCTokenContract.address, SBCDepositContract.address, validatorNumDefault, incentiveDurationDefault])
     await incentiveDepositContractV0.deployed();
 
