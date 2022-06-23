@@ -11,6 +11,8 @@ describe("IncentiveDepositContract_v0 upgradaded", function () {
   const incentiveDurationDefault = 60 * 60 * 24 * 30; // 30 days
   const validatorNumDefault = 1;
   const depositAmount = ethers.utils.parseEther("32");
+  const amountNode = ethers.utils.parseEther("20000000");
+  const amountAirdrop = ethers.utils.parseEther("500");
 
   const deposit = {
     pubkey: '0x85e52247873439b180471ceb94ef9966c2cef1c194cc926e7d6494fecccbcdc076bcd751309f174dd8b7e21402c85ac0',
@@ -53,7 +55,7 @@ describe("IncentiveDepositContract_v0 upgradaded", function () {
 
 
     // Dappnode incentive deposit contract
-    const IncentiveDepositContractFactoryV0 = await ethers.getContractFactory('IncentiveDepositContract_v0')
+    const IncentiveDepositContractFactoryV0 = await ethers.getContractFactory('IncentiveDepositContract_v1')
     const incentiveDepositContractV0 = await upgrades.deployProxy(IncentiveDepositContractFactoryV0, [SBCTokenContract.address, SBCDepositContract.address, validatorNumDefault, incentiveDurationDefault])
     await incentiveDepositContractV0.deployed();
 
@@ -70,11 +72,37 @@ describe("IncentiveDepositContract_v0 upgradaded", function () {
     // Upgrade the contract
     await upgrades.upgradeProxy(incentiveDepositContractV0.address, incentiveDepositContractFactory);
 
-    // Check that the contract is upgraded
-    await expect(incentiveDepositContract.renewBeneficiaries([beneficiary1.address]))
-      .to.emit(incentiveDepositContract, "RenewIncentive");
-
     // Should pass the rest of the test correctly after being upgraded
+
+    // deploy Node token 
+    const tokenFactory = await ethers.getContractFactory("NODE");
+    token = await tokenFactory.deploy(deployer.address);
+    await token.deployed();
+    await token.mint(deployer.address, amountNode);
+
+    // deploy Token distro
+    const TokenDistroFactory = await ethers.getContractFactory("TokenDistroMock");
+
+    const startTime = (await ethers.provider.getBlock()).timestamp;
+    const startToCliff = 180 * (3600 * 24);
+    const startToEnd = 730 * (3600 * 24);
+    const initialPercentage = 0;
+
+    tokenDistro = await TokenDistroFactory.deploy(
+      amountNode,
+      startTime,
+      startToCliff,
+      startToEnd,
+      initialPercentage,
+      token.address,
+      false
+    );
+
+    // setup tokenDistro
+    await incentiveDepositContract.setTokenDistro(tokenDistro.address)
+    await token.transfer(tokenDistro.address, amountNode)
+    await tokenDistro.grantRole(await tokenDistro.DISTRIBUTOR_ROLE(), incentiveDepositContract.address)
+    await tokenDistro.assign(incentiveDepositContract.address, amountNode)
   });
 
   it("should check the initialized variables", async () => {
@@ -83,6 +111,7 @@ describe("IncentiveDepositContract_v0 upgradaded", function () {
     expect(await incentiveDepositContract.validatorNum()).to.be.equal(validatorNumDefault);
     expect(await incentiveDepositContract.DEPOSIT_AMOUNT()).to.be.equal(depositAmount);
     expect(await incentiveDepositContract.incentiveDuration()).to.be.equal(incentiveDurationDefault);
+    expect(await incentiveDepositContract.NODE_AIRDROP_AMOUNT()).to.be.equal(amountAirdrop);
   });
 
   it("should be able to add and cancel incentives", async () => {

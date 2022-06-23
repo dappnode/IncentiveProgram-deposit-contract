@@ -5,6 +5,7 @@ require('@openzeppelin/hardhat-upgrades');
 require("@nomiclabs/hardhat-etherscan");
 
 DEFAULT_MNEMONIC = "test test test test test test test test test test test test"
+DEFAULT_PVTKEY = "0x65b80d37f35356f1475134121b9e04ba0e9ed4505c34990339a4f4a3a1816968" // Test private key
 
 task("accounts", "Prints the list of accounts", async () => {
   const accounts = await ethers.getSigners();
@@ -31,7 +32,25 @@ module.exports = {
             runs: 999999
           }
         }
-      }
+      },
+      {
+        version: "0.8.6",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 999999
+          }
+        }
+      },
+      {
+        version: "0.5.16",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 999999
+          }
+        }
+      },
     ]
   },
   networks: {
@@ -74,8 +93,8 @@ module.exports = {
       },
     },
     xDAI: {
-      url: `https://xdai.poanetwork.dev`,
-      accounts: [`${process.env.PRIVATE_KEY_XDAI}`]
+      url: `https://rpc.gnosischain.com`,
+      accounts: [`${process.env.PRIVATE_KEY_XDAI || DEFAULT_PVTKEY}`]
     }
   },
   etherscan: {

@@ -3,16 +3,15 @@
 pragma solidity 0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "../gnosisContracts/interfaces/IERC677.sol";
+import "../../gnosisContracts/interfaces/IERC677.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "./Interfaces/IDistro.sol";
 
 /**
  * Contract responsible for managing the dappnode incentive program
  * The beneficiaries can make a deposit to the SBC deposit contract without paying the deposit cost
  */
-contract IncentiveDepositContract is OwnableUpgradeable {
+contract IncentiveDepositContract_v1 is OwnableUpgradeable {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     struct IncentiveData {
@@ -22,9 +21,6 @@ contract IncentiveDepositContract is OwnableUpgradeable {
 
     // Every deposit requires 32 mGNO tokens
     uint256 public constant DEPOSIT_AMOUNT = 32 ether;
-
-    // Node airdrop that will be distributed with the GNO incentive aswell
-    uint256 public constant NODE_AIRDROP_AMOUNT = 500 ether;
 
     // Duration of the incentive since it's assigned
     uint256 public incentiveDuration;
@@ -40,9 +36,6 @@ contract IncentiveDepositContract is OwnableUpgradeable {
 
     // Mapping of beneficiaries to their respective incentive data
     mapping(address => IncentiveData) public addressToIncentive;
-
-    // Token Distro
-    IDistro public tokenDistro;
 
     /**
      * @dev Emitted when a incentive is claimed
@@ -73,11 +66,6 @@ contract IncentiveDepositContract is OwnableUpgradeable {
      * @dev Emitted when a the incentive duration is updated
      */
     event SetIncentiveDuration(uint256 newIncentiveDuration);
-
-    /**
-     * @dev Emitted when tokenDistro is set
-     */
-    event SetTokenDIstro(address newTokenDistro);
 
     function initialize(
         IERC677 _sbcToken,
@@ -119,9 +107,6 @@ contract IncentiveDepositContract is OwnableUpgradeable {
             DEPOSIT_AMOUNT * validatorNum,
             data
         );
-
-        // allocate node airdrop
-        tokenDistro.allocate(msg.sender, NODE_AIRDROP_AMOUNT);
 
         emit ClaimedIncentive(msg.sender);
     }
@@ -220,29 +205,5 @@ contract IncentiveDepositContract is OwnableUpgradeable {
     {
         uint256 balance = _token.balanceOf(address(this));
         _token.safeTransfer(_to, balance);
-    }
-
-    /**
-     * @dev Allows to update the token distro address.
-     * Only owner can call this method.
-     * @param newTokenDistro token distro address.
-     */
-    function setTokenDistro(IDistro newTokenDistro) external onlyOwner {
-        tokenDistro = newTokenDistro;
-
-        emit SetTokenDIstro(address(newTokenDistro));
-    }
-
-    /**
-     * Function that allows allocate node airdrop
-     * Only owner can call this method.
-     * @param recipients array of token allocation
-     * @param amounts array of allocated amount
-     */
-    function allocateMany(address[] memory recipients, uint256[] memory amounts)
-        external
-        onlyOwner
-    {
-        tokenDistro.allocateMany(recipients, amounts);
     }
 }
