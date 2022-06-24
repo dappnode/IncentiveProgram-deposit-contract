@@ -1,20 +1,15 @@
 const { expect } = require("chai");
 const { ethers, upgrades } = require("hardhat");
 
-describe("IncentiveDepositContract", function () {
+describe("IncentiveDepositContract_v1", function () {
   let deployer;
 
   let SBCTokenContract;
   let SBCDepositContract;
 
-  let token;
-  let tokenDistro;
-
   const incentiveDurationDefault = 60 * 60 * 24 * 30; // 30 days
   const validatorNumDefault = 1;
   const depositAmount = ethers.utils.parseEther("32");
-  const amountNode = ethers.utils.parseEther("20000000");
-  const amountAirdrop = ethers.utils.parseEther("500");
 
   const deposit = {
     pubkey: '0x85e52247873439b180471ceb94ef9966c2cef1c194cc926e7d6494fecccbcdc076bcd751309f174dd8b7e21402c85ac0',
@@ -42,7 +37,6 @@ describe("IncentiveDepositContract", function () {
     beneficiary1 = signers[1];
     beneficiary2 = signers[2];
     beneficiary3 = signers[3];
-    beneficiary4 = signers[4];
 
     // Gnosis deposit contact deployment without wrapper, deployer will be the admin of the SCB token
     const SBCDepositContractProxyFactory = await ethers.getContractFactory('SBCDepositContractProxy')
@@ -58,39 +52,13 @@ describe("IncentiveDepositContract", function () {
 
 
     // Dappnode incentive deposit contract
-    const IncentiveDepositContractFactory = await ethers.getContractFactory('IncentiveDepositContract')
+    const IncentiveDepositContractFactory = await ethers.getContractFactory('IncentiveDepositContract_v1')
     incentiveDepositContract = await IncentiveDepositContractFactory.deploy()
     await incentiveDepositContract.initialize(SBCTokenContract.address, SBCDepositContract.address, validatorNumDefault, incentiveDurationDefault)
 
 
     // Set minter to the deployment address
     await SBCTokenContract.setMinter(deployer.address)
-
-    // deploy Node token 
-    const tokenFactory = await ethers.getContractFactory("NODE");
-    token = await tokenFactory.deploy(deployer.address);
-    await token.deployed();
-    await token.mint(deployer.address, amountNode);
-
-    // deploy Token distro
-    const TokenDistroFactory = await ethers.getContractFactory("TokenDistroMock");
-
-    const startTime = (await ethers.provider.getBlock()).timestamp;
-    const startToCliff = 180 * (3600 * 24);
-    const startToEnd = 730 * (3600 * 24);
-    const initialPercentage = 0;
-
-    tokenDistro = await TokenDistroFactory.deploy(
-      amountNode,
-      startTime,
-      startToCliff,
-      startToEnd,
-      initialPercentage,
-      token.address,
-      false
-    );
-
-
   });
 
   it("should check the initialized variables", async () => {
@@ -99,8 +67,6 @@ describe("IncentiveDepositContract", function () {
     expect(await incentiveDepositContract.validatorNum()).to.be.equal(validatorNumDefault);
     expect(await incentiveDepositContract.DEPOSIT_AMOUNT()).to.be.equal(depositAmount);
     expect(await incentiveDepositContract.incentiveDuration()).to.be.equal(incentiveDurationDefault);
-    expect(await incentiveDepositContract.tokenDistro()).to.be.equal(ethers.constants.AddressZero);
-    expect(await incentiveDepositContract.NODE_AIRDROP_AMOUNT()).to.be.equal(amountAirdrop);
   });
 
   it("should be able to add and cancel incentives", async () => {
@@ -333,30 +299,10 @@ describe("IncentiveDepositContract", function () {
     await expect(incentiveDepositContract.claimIncentive(invalidData))
       .to.be.revertedWith("DepositContract: reconstructed DepositData does not match supplied deposit_data_root")
 
-    // Should add because tokenDistro is not set
-    await expect(incentiveDepositContract.claimIncentive(data))
-      .to.be.revertedWith("function call to a non-contract account")
-
-    // set tokenDistro
-    expect(await incentiveDepositContract.tokenDistro()).to.be.equal(ethers.constants.AddressZero);
-    await incentiveDepositContract.setTokenDistro(tokenDistro.address)
-    expect(await incentiveDepositContract.tokenDistro()).to.be.equal(tokenDistro.address);
-
-    // Should add because contract does not have distributor rights
-    await expect(incentiveDepositContract.claimIncentive(data))
-      .to.be.revertedWith("TokenDistro::allocate: ONLY_DISTRIBUTOR_ROLE")
-
-    // Transfer tokens, assign role and assign tokens
-    await token.transfer(tokenDistro.address, amountNode)
-    await tokenDistro.grantRole(await tokenDistro.DISTRIBUTOR_ROLE(), incentiveDepositContract.address)
-    await tokenDistro.assign(incentiveDepositContract.address, amountNode)
-
     // should perform correctly a deposit
     await expect(incentiveDepositContract.claimIncentive(data))
       .to.emit(incentiveDepositContract, "ClaimedIncentive")
-      .withArgs(deployer.address)
-      .to.emit(tokenDistro, "Allocate")
-      .withArgs(incentiveDepositContract.address, deployer.address, amountAirdrop)
+      .withArgs(deployer.address);
 
     // Check into the deposit contract that everything goes ok, this values are from the gnosis deposit contract test
     expect(await SBCDepositContract.get_deposit_count()).to.be.equal('0x0100000000000000')
@@ -418,13 +364,6 @@ describe("IncentiveDepositContract", function () {
       .to.emit(incentiveDepositContract, "SetValidatorNum")
       .withArgs(newValidatorNum)
 
-
-    // setup tokenDistro
-    await incentiveDepositContract.setTokenDistro(tokenDistro.address)
-    await token.transfer(tokenDistro.address, amountNode)
-    await tokenDistro.grantRole(await tokenDistro.DISTRIBUTOR_ROLE(), incentiveDepositContract.address)
-    await tokenDistro.assign(incentiveDepositContract.address, amountNode)
-
     // should revert because deposit data length does not match with the validatorNum
     await expect(incentiveDepositContract.claimIncentive(dataDeposit1))
       .to.be.revertedWith("IncentiveDepositContract::claimIncentive:: incorrect deposit data length")
@@ -474,12 +413,6 @@ describe("IncentiveDepositContract", function () {
     await SBCTokenContract.mint(incentiveDepositContract.address, initialTokens)
     expect(await SBCTokenContract.balanceOf(incentiveDepositContract.address)).to.be.equal(initialTokens);
 
-    // setup tokenDistro
-    await incentiveDepositContract.setTokenDistro(tokenDistro.address)
-    await token.transfer(tokenDistro.address, amountNode)
-    await tokenDistro.grantRole(await tokenDistro.DISTRIBUTOR_ROLE(), incentiveDepositContract.address)
-    await tokenDistro.assign(incentiveDepositContract.address, amountNode)
-
     // set validator num to 4
     const newValidatorNum = 4;
     await expect(incentiveDepositContract.setValidatorNum(newValidatorNum))
@@ -498,32 +431,5 @@ describe("IncentiveDepositContract", function () {
     // check incentive data
     const incentiveDataAfter = await incentiveDepositContract.addressToIncentive(deployer.address);
     expect(incentiveDataAfter.isClaimed).to.be.equal(true);
-  });
-
-  it("should be able to allocate many", async () => {
-    // setup tokenDistro
-    await incentiveDepositContract.setTokenDistro(tokenDistro.address)
-    await token.transfer(tokenDistro.address, amountNode)
-    await tokenDistro.grantRole(await tokenDistro.DISTRIBUTOR_ROLE(), incentiveDepositContract.address)
-    await tokenDistro.assign(incentiveDepositContract.address, amountNode)
-
-
-    let amountRecipient1 = amountNode.div(2);
-    let amountRecipient2 = amountRecipient1.div(2);
-    let amountRecipient3 = amountRecipient2.div(2);
-    let amountRecipient4 = amountRecipient3.div(2);
-
-    const addresses = [beneficiary1.address, beneficiary2.address, beneficiary3.address, beneficiary4.address]
-    const amounts = [amountRecipient1, amountRecipient2, amountRecipient3, amountRecipient4]
-
-    await expect(incentiveDepositContract.allocateMany(addresses, amounts))
-      .to.emit(tokenDistro, "Allocate")
-      .withArgs(incentiveDepositContract.address, beneficiary1.address, amountRecipient1)
-      .to.emit(tokenDistro, "Allocate")
-      .withArgs(incentiveDepositContract.address, beneficiary2.address, amountRecipient2)
-      .to.emit(tokenDistro, "Allocate")
-      .withArgs(incentiveDepositContract.address, beneficiary3.address, amountRecipient3)
-      .to.emit(tokenDistro, "Allocate")
-      .withArgs(incentiveDepositContract.address, beneficiary4.address, amountRecipient4)
   });
 });

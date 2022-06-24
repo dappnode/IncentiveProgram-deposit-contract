@@ -9,11 +9,13 @@
     "deploy:IncentiveProgram:xDai": "npx hardhat run deployment/deployIncentiveDepositContract.js --network xDAI",
     "upgrade:IncentiveProgram:localhost": "npx hardhat run upgrade/upgradeIncentiveDepositContract.js --network localhost",
     "upgrade:IncentiveProgram:xDai": "npx hardhat run upgrade/upgradeIncentiveDepositContract.js --network xDAI",
-    "flatten:IncentiveProgram": "npx hardhat flatten contracts/dappnodeContracts/IncentiveDepositContract.sol > deployment/IncentveDepositContract.flat"
+    "flatten:IncentiveProgram": "npx hardhat flatten contracts/dappnodeContracts/IncentiveDepositContract.sol > deployment/IncentveDepositContract.flat",
+    "getClaimedIncentives": "node scripts/getClaimedIncentives.js",
+    "allocateNodeAirdrop": "npx hardhat run scripts/allocateNodeAirdrop.js --network xDAI"
   },
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "@nomiclabs/hardhat-etherscan": "^2.1.7",
+    "@nomiclabs/hardhat-etherscan": "^3.1.0",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@openzeppelin/contracts": "^4.3.2",
     "@openzeppelin/contracts-upgradeable": "^4.3.2",
