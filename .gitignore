@@ -3,6 +3,5 @@ cache
 build
 node_modules
 package-lock.json
-.openzeppelin
 artifacts/
 .vscode/

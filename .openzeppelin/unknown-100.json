@@ -1,0 +1,561 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x8Eb6EC9600155F47620503F8dC638ed9a64975be",
+    "txHash": "0xf4881776c2d5612a43cfcb13b3df655caab9cd3d18cf9e281f024c264fdd112e",
+    "deployTransaction": {
+      "hash": "0xf4881776c2d5612a43cfcb13b3df655caab9cd3d18cf9e281f024c264fdd112e",
+      "type": 2,
+      "accessList": null,
+      "blockHash": null,
+      "blockNumber": null,
+      "transactionIndex": null,
+      "confirmations": 0,
+      "from": "0xdFd82762249655Bb7904AFdFE24efD0684BE055f",
+      "gasPrice": {
+        "type": "BigNumber",
+        "hex": "0x77359403"
+      },
+      "maxPriorityFeePerGas": {
+        "type": "BigNumber",
+        "hex": "0x773593f4"
+      },
+      "maxFeePerGas": {
+        "type": "BigNumber",
+        "hex": "0x77359403"
+      },
+      "gasLimit": {
+        "type": "BigNumber",
+        "hex": "0x076b4d"
+      },
+      "to": null,
+      "value": {
+        "type": "BigNumber",
+        "hex": "0x00"
+      },
+      "nonce": 1,
+      "data": "0x608060405234801561001057600080fd5b50600080546001600160a01b031916339081178255604051909182917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a350610759806100616000396000f3fe60806040526004361061007b5760003560e01c80639623609d1161004e5780639623609d1461011157806399a88ec414610124578063f2fde38b14610144578063f3b7dead146101645761007b565b8063204e1c7a14610080578063715018a6146100bc5780637eff275e146100d35780638da5cb5b146100f3575b600080fd5b34801561008c57600080fd5b506100a061009b366004610515565b610184565b6040516001600160a01b03909116815260200160405180910390f35b3480156100c857600080fd5b506100d1610215565b005b3480156100df57600080fd5b506100d16100ee366004610554565b610292565b3480156100ff57600080fd5b506000546001600160a01b03166100a0565b6100d161011f36600461058c565b61031c565b34801561013057600080fd5b506100d161013f366004610554565b6103ad565b34801561015057600080fd5b506100d161015f366004610515565b610405565b34801561017057600080fd5b506100a061017f366004610515565b6104ef565b6000806000836001600160a01b03166040516101aa90635c60da1b60e01b815260040190565b600060405180830381855afa9150503d80600081146101e5576040519150601f19603f3d011682016040523d82523d6000602084013e6101ea565b606091505b5091509150816101f957600080fd5b8080602001905181019061020d9190610538565b949350505050565b6000546001600160a01b031633146102485760405162461bcd60e51b815260040161023f906106c0565b60405180910390fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031633146102bc5760405162461bcd60e51b815260040161023f906106c0565b6040516308f2839760e41b81526001600160a01b038281166004830152831690638f283970906024015b600060405180830381600087803b15801561030057600080fd5b505af1158015610314573d6000803e3d6000fd5b505050505050565b6000546001600160a01b031633146103465760405162461bcd60e51b815260040161023f906106c0565b60405163278f794360e11b81526001600160a01b03841690634f1ef286903490610376908690869060040161065d565b6000604051808303818588803b15801561038f57600080fd5b505af11580156103a3573d6000803e3d6000fd5b5050505050505050565b6000546001600160a01b031633146103d75760405162461bcd60e51b815260040161023f906106c0565b604051631b2ce7f360e11b81526001600160a01b038281166004830152831690633659cfe6906024016102e6565b6000546001600160a01b0316331461042f5760405162461bcd60e51b815260040161023f906106c0565b6001600160a01b0381166104945760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b606482015260840161023f565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b6000806000836001600160a01b03166040516101aa906303e1469160e61b815260040190565b600060208284031215610526578081fd5b81356105318161070b565b9392505050565b600060208284031215610549578081fd5b81516105318161070b565b60008060408385031215610566578081fd5b82356105718161070b565b915060208301356105818161070b565b809150509250929050565b6000806000606084860312156105a0578081fd5b83356105ab8161070b565b925060208401356105bb8161070b565b9150604084013567ffffffffffffffff808211156105d7578283fd5b818601915086601f8301126105ea578283fd5b8135818111156105fc576105fc6106f5565b604051601f8201601f19908116603f01168101908382118183101715610624576106246106f5565b8160405282815289602084870101111561063c578586fd5b82602086016020830137856020848301015280955050505050509250925092565b600060018060a01b038416825260206040818401528351806040850152825b818110156106985785810183015185820160600152820161067c565b818111156106a95783606083870101525b50601f01601f191692909201606001949350505050565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b634e487b7160e01b600052604160045260246000fd5b6001600160a01b038116811461072057600080fd5b5056fea2646970667358221220d849f96f3086b9f82cdcf665adb8c697ace05638da1c7c16ab2d26293717af6764736f6c63430008020033",
+      "r": "0xa628acf66f09082483be16ccc248d0b093527ffd00c5558beda3287748a493b9",
+      "s": "0x42fc85ff316df7e5e186a002f9ef2f38b6075043ac300ac2350a20ec26b05b69",
+      "v": 0,
+      "creates": "0x8Eb6EC9600155F47620503F8dC638ed9a64975be",
+      "chainId": 100
+    }
+  },
+  "proxies": [
+    {
+      "address": "0x5f95D2EDb838C7C19E7adac544483F2d15F4B0f9",
+      "txHash": "0xe225a8fddc2c1ac91943a2218a6a46b5ec1703cb61712f0cbb099a0ed282b70a",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xB4fd3CBaf157a7384666C81c849a785bBe707255",
+      "txHash": "0x056a11f7373900fdd0def226b7b3b8236f7f5259ac4899d681009ddd1d845bcb",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xCc693171b8279ed8f83DD6d7f54eA4d20671F2c8",
+      "txHash": "0x44cb890b1febceaf3a207c38cefa2b863d6133c7f05d67cbe5d94525d2acbb46",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x6C68322cf55f5f025F2aebd93a28761182d077c3",
+      "txHash": "0x8baed37b6240005f8d13bc911648f8a8386f69116d50650b2ae03811db23ce29",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "9056443b5d0a9f085bdddf087c25229d95e957ec09227cc637842bdf6a77f349": {
+      "address": "0x20d18605B250A7d7Ad33146936B5cDd936158843",
+      "txHash": "0x19b582b791963fc6c683d575d16d2493d8dc97b2c1f3849ae61871279d81f30b",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "IncentiveDepositContract",
+            "label": "sbcToken",
+            "type": "t_contract(SBCToken)3007",
+            "src": "contracts/dappnodeContracts/IncentiveDepositContract.sol:13"
+          },
+          {
+            "contract": "IncentiveDepositContract",
+            "label": "sbcDepositContract",
+            "type": "t_contract(SBCDepositContract)2813",
+            "src": "contracts/dappnodeContracts/IncentiveDepositContract.sol:14"
+          }
+        ],
+        "types": {
+          "t_contract(SBCToken)3007": {
+            "label": "contract SBCToken"
+          },
+          "t_contract(SBCDepositContract)2813": {
+            "label": "contract SBCDepositContract"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_bool": {
+            "label": "bool"
+          }
+        }
+      }
+    },
+    "e50f117cd7a9d3d8d0fee8f5dd909adf851ef902c60aa179a4dc7ba162add257": {
+      "address": "0xE9FC19d391DfD5BFaDD39c92eab8ae31eF831712",
+      "txHash": "0x704ca81dd238c24c5504b07aa5023bef20a9f401e0fecf8b834e190efb6aa1d7",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "IncentiveDepositContract",
+            "label": "sbcToken",
+            "type": "t_contract(IERC677)3737",
+            "src": "contracts/dappnodeContracts/IncentiveDepositContract.sol:26"
+          },
+          {
+            "contract": "IncentiveDepositContract",
+            "label": "sbcDepositContract",
+            "type": "t_address",
+            "src": "contracts/dappnodeContracts/IncentiveDepositContract.sol:29"
+          },
+          {
+            "contract": "IncentiveDepositContract",
+            "label": "validatorNum",
+            "type": "t_uint256",
+            "src": "contracts/dappnodeContracts/IncentiveDepositContract.sol:32"
+          },
+          {
+            "contract": "IncentiveDepositContract",
+            "label": "addressToIncentive",
+            "type": "t_mapping(t_address,t_struct(IncentiveData)1876_storage)",
+            "src": "contracts/dappnodeContracts/IncentiveDepositContract.sol:35"
+          }
+        ],
+        "types": {
+          "t_contract(IERC677)3737": {
+            "label": "contract IERC677"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_struct(IncentiveData)1876_storage)": {
+            "label": "mapping(address => struct IncentiveDepositContract.IncentiveData)"
+          },
+          "t_struct(IncentiveData)1876_storage": {
+            "label": "struct IncentiveDepositContract.IncentiveData",
+            "members": [
+              {
+                "label": "endTime",
+                "type": "t_uint256"
+              },
+              {
+                "label": "isClaimed",
+                "type": "t_bool"
+              }
+            ]
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "7617992b20cfae4538e1e37606726bb44879586e866603ade9d9223a5435887b": {
+      "address": "0x6E179B83C5E4059166293df4e11d08997F4a0262",
+      "txHash": "0xf7b2d8fe3491ca2ec31c82ddadca2ca12e630cfd408d9b212b107eb95ab3d27c",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "IncentiveDepositContract_v0",
+            "label": "incentiveDuration",
+            "type": "t_uint256",
+            "src": "contracts/dappnodeContracts/previous_versions/IncentiveDepositContract_v0.sol:26"
+          },
+          {
+            "contract": "IncentiveDepositContract_v0",
+            "label": "sbcToken",
+            "type": "t_contract(IERC677)4471",
+            "src": "contracts/dappnodeContracts/previous_versions/IncentiveDepositContract_v0.sol:29"
+          },
+          {
+            "contract": "IncentiveDepositContract_v0",
+            "label": "sbcDepositContract",
+            "type": "t_address",
+            "src": "contracts/dappnodeContracts/previous_versions/IncentiveDepositContract_v0.sol:32"
+          },
+          {
+            "contract": "IncentiveDepositContract_v0",
+            "label": "validatorNum",
+            "type": "t_uint256",
+            "src": "contracts/dappnodeContracts/previous_versions/IncentiveDepositContract_v0.sol:35"
+          },
+          {
+            "contract": "IncentiveDepositContract_v0",
+            "label": "addressToIncentive",
+            "type": "t_mapping(t_address,t_struct(IncentiveData)2557_storage)",
+            "src": "contracts/dappnodeContracts/previous_versions/IncentiveDepositContract_v0.sol:38"
+          }
+        ],
+        "types": {
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_contract(IERC677)4471": {
+            "label": "contract IERC677"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_mapping(t_address,t_struct(IncentiveData)2557_storage)": {
+            "label": "mapping(address => struct IncentiveDepositContract_v0.IncentiveData)"
+          },
+          "t_struct(IncentiveData)2557_storage": {
+            "label": "struct IncentiveDepositContract_v0.IncentiveData",
+            "members": [
+              {
+                "label": "endTime",
+                "type": "t_uint256"
+              },
+              {
+                "label": "isClaimed",
+                "type": "t_bool"
+              }
+            ]
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "3a3e9f29940945cd411d7e027b23f9c46cdebcd630f6086d07c4fb0f81c1ca20": {
+      "address": "0x1B5785D93d2626e21b78FaCEaceAFe6Fe28010E3",
+      "txHash": "0xa2fce9bc3e58c198fb30440b05949ce9fbbf9a270d06a3ef66b553975ffc51bc",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "IncentiveDepositContract_v1",
+            "label": "incentiveDuration",
+            "type": "t_uint256",
+            "src": "contracts/dappnodeContracts/previous_versions/IncentiveDepositContract_v1.sol:26"
+          },
+          {
+            "contract": "IncentiveDepositContract_v1",
+            "label": "sbcToken",
+            "type": "t_contract(IERC677)7359",
+            "src": "contracts/dappnodeContracts/previous_versions/IncentiveDepositContract_v1.sol:29"
+          },
+          {
+            "contract": "IncentiveDepositContract_v1",
+            "label": "sbcDepositContract",
+            "type": "t_address",
+            "src": "contracts/dappnodeContracts/previous_versions/IncentiveDepositContract_v1.sol:32"
+          },
+          {
+            "contract": "IncentiveDepositContract_v1",
+            "label": "validatorNum",
+            "type": "t_uint256",
+            "src": "contracts/dappnodeContracts/previous_versions/IncentiveDepositContract_v1.sol:35"
+          },
+          {
+            "contract": "IncentiveDepositContract_v1",
+            "label": "addressToIncentive",
+            "type": "t_mapping(t_address,t_struct(IncentiveData)5365_storage)",
+            "src": "contracts/dappnodeContracts/previous_versions/IncentiveDepositContract_v1.sol:38"
+          }
+        ],
+        "types": {
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_contract(IERC677)7359": {
+            "label": "contract IERC677"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_mapping(t_address,t_struct(IncentiveData)5365_storage)": {
+            "label": "mapping(address => struct IncentiveDepositContract_v1.IncentiveData)"
+          },
+          "t_struct(IncentiveData)5365_storage": {
+            "label": "struct IncentiveDepositContract_v1.IncentiveData",
+            "members": [
+              {
+                "label": "endTime",
+                "type": "t_uint256"
+              },
+              {
+                "label": "isClaimed",
+                "type": "t_bool"
+              }
+            ]
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "67d857ed7dc9d20668871025b870c4d83b44775acb836c01be60d39b38fbf92f": {
+      "address": "0xb85CC7Ab8f9F6232107f7B6f70f5A52F8dA2131A",
+      "txHash": "0x3a6a015844293ea64b1ae1b32f1b243b67323689a1600032b7f706ca0af0550f",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "IncentiveDepositContract",
+            "label": "incentiveDuration",
+            "type": "t_uint256",
+            "src": "contracts/dappnodeContracts/IncentiveDepositContract.sol:30"
+          },
+          {
+            "contract": "IncentiveDepositContract",
+            "label": "sbcToken",
+            "type": "t_contract(IERC677)7359",
+            "src": "contracts/dappnodeContracts/IncentiveDepositContract.sol:33"
+          },
+          {
+            "contract": "IncentiveDepositContract",
+            "label": "sbcDepositContract",
+            "type": "t_address",
+            "src": "contracts/dappnodeContracts/IncentiveDepositContract.sol:36"
+          },
+          {
+            "contract": "IncentiveDepositContract",
+            "label": "validatorNum",
+            "type": "t_uint256",
+            "src": "contracts/dappnodeContracts/IncentiveDepositContract.sol:39"
+          },
+          {
+            "contract": "IncentiveDepositContract",
+            "label": "addressToIncentive",
+            "type": "t_mapping(t_address,t_struct(IncentiveData)3633_storage)",
+            "src": "contracts/dappnodeContracts/IncentiveDepositContract.sol:42"
+          },
+          {
+            "contract": "IncentiveDepositContract",
+            "label": "tokenDistro",
+            "type": "t_contract(IDistro)4173",
+            "src": "contracts/dappnodeContracts/IncentiveDepositContract.sol:45"
+          }
+        ],
+        "types": {
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_contract(IERC677)7359": {
+            "label": "contract IERC677"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_mapping(t_address,t_struct(IncentiveData)3633_storage)": {
+            "label": "mapping(address => struct IncentiveDepositContract.IncentiveData)"
+          },
+          "t_struct(IncentiveData)3633_storage": {
+            "label": "struct IncentiveDepositContract.IncentiveData",
+            "members": [
+              {
+                "label": "endTime",
+                "type": "t_uint256"
+              },
+              {
+                "label": "isClaimed",
+                "type": "t_bool"
+              }
+            ]
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_contract(IDistro)4173": {
+            "label": "contract IDistro"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    }
+  }
+}
