@@ -4,8 +4,10 @@ pragma solidity 0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../gnosisContracts/interfaces/IERC677.sol";
+import "../gnosisContracts/interfaces/IUnwrapper.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./Interfaces/IDistro.sol";
 
 /**
@@ -20,8 +22,8 @@ contract IncentiveDepositContract is OwnableUpgradeable {
         bool isClaimed; // Indicate if the incentive has been claimed
     }
 
-    // Every deposit requires 32 mGNO tokens
-    uint256 public constant DEPOSIT_AMOUNT = 32 ether;
+    // Every deposit requires 1 GNO tokens
+    uint256 public constant DEPOSIT_AMOUNT = 1 ether;
 
     // Node airdrop that will be distributed with the GNO incentive aswell
     uint256 public constant NODE_AIRDROP_AMOUNT = 500 ether;
@@ -114,11 +116,10 @@ contract IncentiveDepositContract is OwnableUpgradeable {
 
         addressToIncentive[msg.sender].isClaimed = true;
 
-        sbcToken.transferAndCall(
-            sbcDepositContract,
-            DEPOSIT_AMOUNT * validatorNum,
-            data
-        );
+        // Note: requires this contract to have pre-approved GNO transfers to sbcDepositContract
+        // Since the sbcDepositContract is trusted, it should assume an infinite approve
+        (bool success, bytes memory _data) = sbcDepositContract.call(data);
+        require(success, "IncentiveDepositContract::claimIncentive:: call failed");
 
         // allocate node airdrop
         tokenDistro.allocate(msg.sender, NODE_AIRDROP_AMOUNT);
@@ -244,5 +245,24 @@ contract IncentiveDepositContract is OwnableUpgradeable {
         onlyOwner
     {
         tokenDistro.allocateMany(recipients, amounts);
+    }
+
+    /**
+     * @dev Allows to unwrap the mGNO in this contract to GNO
+     * Only owner can call this method.
+     * @param _unwrapper address of the mGNO token unwrapper
+     */
+    function unwrapMGNO(IUnwrapper _unwrapper, IERC20 _token) external onlyOwner {
+        _unwrapper.unwrap(address(sbcToken), _token.balanceOf(address(this)));
+    }
+
+    /**
+     * @dev Setup an infinte approval of GNO to the deposit contract
+     */
+    function approveGNO(IERC20 _token) external onlyOwner {
+        require(
+            _token.approve(address(sbcDepositContract), 2**256 - 1),
+            "IncentiveDepositContract::approveGNO:: call failed"
+        );
     }
 }
