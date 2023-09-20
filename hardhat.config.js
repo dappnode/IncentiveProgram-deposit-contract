@@ -92,13 +92,26 @@ module.exports = {
         count: 20,
       },
     },
-    xDAI: {
+    gnosis: {
       url: `https://rpc.gnosischain.com`,
       accounts: [`${process.env.PRIVATE_KEY_XDAI || DEFAULT_PVTKEY}`]
     }
   },
   etherscan: {
-    apiKey: `${process.env.ETHERSCAN_API_KEY}`
-  }
+    apiKey: {
+      chiado: `${process.env.ETHERSCAN_API_KEY}`,
+      gnosis: `${process.env.GNOSISCAN_API_KEY}`,
+    },
+    customChains: [
+      {
+        network: "gnosis",
+        chainId: 100,
+        urls: {
+          apiURL: "https://api.gnosisscan.io/api",
+          browserURL: "https://gnosisscan.io/"
+        }
+      }
+    ]
+  },
 };
 

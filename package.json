@@ -6,12 +6,12 @@
     "test": "npx hardhat test",
     "deploy:IncentiveProgram:localhost": "npx hardhat run deployment/deployIncentiveDepositContract.js --network localhost",
     "deploy:IncentiveProgram:hardhat": "npx hardhat run deployment/deployIncentiveDepositContract.js --network hardhat",
-    "deploy:IncentiveProgram:xDai": "npx hardhat run deployment/deployIncentiveDepositContract.js --network xDAI",
+    "deploy:IncentiveProgram:gnosis": "npx hardhat run deployment/deployIncentiveDepositContract.js --network gnosis",
     "upgrade:IncentiveProgram:localhost": "npx hardhat run upgrade/upgradeIncentiveDepositContract.js --network localhost",
-    "upgrade:IncentiveProgram:xDai": "npx hardhat run upgrade/upgradeIncentiveDepositContract.js --network xDAI",
+    "upgrade:IncentiveProgram:gnosis": "npx hardhat run upgrade/upgradeIncentiveDepositContract.js --network gnosis",
     "flatten:IncentiveProgram": "npx hardhat flatten contracts/dappnodeContracts/IncentiveDepositContract.sol > deployment/IncentveDepositContract.flat",
     "getClaimedIncentives": "node scripts/getClaimedIncentives.js",
-    "allocateNodeAirdrop": "npx hardhat run scripts/allocateNodeAirdrop.js --network xDAI"
+    "allocateNodeAirdrop": "npx hardhat run scripts/allocateNodeAirdrop.js --network gnosis"
   },
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",

@@ -1,4 +1,4 @@
-process.env.HARDHAT_NETWORK = "xDAI";
+process.env.HARDHAT_NETWORK = "gnosis";
 const hre = require("hardhat");
 const { ethers } = require("hardhat");
 const path = require('path');
