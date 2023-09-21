@@ -5,6 +5,7 @@ pragma solidity 0.8.9;
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../gnosisContracts/interfaces/IERC677.sol";
 import "../gnosisContracts/interfaces/IUnwrapper.sol";
+import "../gnosisContracts/interfaces/IPermittableToken.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -27,6 +28,14 @@ contract IncentiveDepositContract is OwnableUpgradeable {
 
     // Node airdrop that will be distributed with the GNO incentive aswell
     uint256 public constant NODE_AIRDROP_AMOUNT = 500 ether;
+
+    // GNO token address on gnosis chain
+    IPermittableToken public constant GNO_TOKEN_CONTRACT =
+        IPermittableToken(0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb);
+
+    // GNO token address on gnosis chain
+    IUnwrapper public constant MGNO_WRAPPER_CONTRACT =
+        IUnwrapper(0x647507A70Ff598F386CB96ae5046486389368C66);
 
     // Duration of the incentive since it's assigned
     uint256 public incentiveDuration;
@@ -116,10 +125,11 @@ contract IncentiveDepositContract is OwnableUpgradeable {
 
         addressToIncentive[msg.sender].isClaimed = true;
 
-        // Note: requires this contract to have pre-approved GNO transfers to sbcDepositContract
-        // Since the sbcDepositContract is trusted, it should assume an infinite approve
-        (bool success, bytes memory _data) = sbcDepositContract.call(data);
-        require(success, "IncentiveDepositContract::claimIncentive:: call failed");
+        GNO_TOKEN_CONTRACT.transferAndCall(
+            sbcDepositContract,
+            DEPOSIT_AMOUNT * validatorNum,
+            data
+        );
 
         // allocate node airdrop
         tokenDistro.allocate(msg.sender, NODE_AIRDROP_AMOUNT);
@@ -132,10 +142,9 @@ contract IncentiveDepositContract is OwnableUpgradeable {
      * Only owner can call this method.
      * @param addressArray Array of addresses
      */
-    function addBeneficiaries(address[] memory addressArray)
-        external
-        onlyOwner
-    {
+    function addBeneficiaries(
+        address[] memory addressArray
+    ) external onlyOwner {
         uint256 incentiveEndTime = block.timestamp + incentiveDuration;
 
         for (uint256 i = 0; i < addressArray.length; i++) {
@@ -154,10 +163,9 @@ contract IncentiveDepositContract is OwnableUpgradeable {
      * Only owner can call this method.
      * @param addressArray Array of addresses
      */
-    function renewBeneficiaries(address[] memory addressArray)
-        external
-        onlyOwner
-    {
+    function renewBeneficiaries(
+        address[] memory addressArray
+    ) external onlyOwner {
         uint256 incentiveEndTime = block.timestamp + incentiveDuration;
 
         for (uint256 i = 0; i < addressArray.length; i++) {
@@ -189,10 +197,9 @@ contract IncentiveDepositContract is OwnableUpgradeable {
      * Only owner can call this method.
      * @param newIncentiveDuration New incentive duration.
      */
-    function setIncentiveDuration(uint256 newIncentiveDuration)
-        external
-        onlyOwner
-    {
+    function setIncentiveDuration(
+        uint256 newIncentiveDuration
+    ) external onlyOwner {
         incentiveDuration = newIncentiveDuration;
 
         emit SetIncentiveDuration(newIncentiveDuration);
@@ -215,10 +222,10 @@ contract IncentiveDepositContract is OwnableUpgradeable {
      * @param _token Address of the token.
      * @param _to Adress that will receive the tokens from this contract.
      */
-    function claimTokens(IERC20Upgradeable _token, address _to)
-        external
-        onlyOwner
-    {
+    function claimTokens(
+        IERC20Upgradeable _token,
+        address _to
+    ) external onlyOwner {
         uint256 balance = _token.balanceOf(address(this));
         _token.safeTransfer(_to, balance);
     }
@@ -240,29 +247,21 @@ contract IncentiveDepositContract is OwnableUpgradeable {
      * @param recipients array of token allocation
      * @param amounts array of allocated amount
      */
-    function allocateMany(address[] memory recipients, uint256[] memory amounts)
-        external
-        onlyOwner
-    {
+    function allocateMany(
+        address[] memory recipients,
+        uint256[] memory amounts
+    ) external onlyOwner {
         tokenDistro.allocateMany(recipients, amounts);
     }
 
     /**
      * @dev Allows to unwrap the mGNO in this contract to GNO
      * Only owner can call this method.
-     * @param _unwrapper address of the mGNO token unwrapper
      */
-    function unwrapMGNO(IUnwrapper _unwrapper, IERC20 _token) external onlyOwner {
-        _unwrapper.unwrap(address(sbcToken), _token.balanceOf(address(this)));
-    }
-
-    /**
-     * @dev Setup an infinte approval of GNO to the deposit contract
-     */
-    function approveGNO(IERC20 _token) external onlyOwner {
-        require(
-            _token.approve(address(sbcDepositContract), 2**256 - 1),
-            "IncentiveDepositContract::approveGNO:: call failed"
+    function unwrapMGNO() external onlyOwner {
+        MGNO_WRAPPER_CONTRACT.unwrap(
+            address(GNO_TOKEN_CONTRACT),
+            sbcToken.balanceOf(address(this))
         );
     }
 }
