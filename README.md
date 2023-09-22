@@ -23,8 +23,8 @@ npm run test
 npm run deploy:IncentiveProgram:hardhat
 ```
 
-## Deploy on xDAi
+## Deploy on gnosis
 
 ```
-npm run deploy:IncentiveProgram:xDai
+npm run deploy:IncentiveProgram:gnosis
 ```

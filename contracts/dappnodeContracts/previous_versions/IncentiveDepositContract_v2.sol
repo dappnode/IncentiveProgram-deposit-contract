@@ -3,19 +3,16 @@
 pragma solidity 0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "../gnosisContracts/interfaces/IERC677.sol";
-import "../gnosisContracts/interfaces/IUnwrapper.sol";
-import "../gnosisContracts/interfaces/IPermittableToken.sol";
+import "../../gnosisContracts/interfaces/IERC677.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./Interfaces/IDistro.sol";
+import "../Interfaces/IDistro.sol";
 
 /**
  * Contract responsible for managing the dappnode incentive program
  * The beneficiaries can make a deposit to the SBC deposit contract without paying the deposit cost
  */
-contract IncentiveDepositContract is OwnableUpgradeable {
+contract IncentiveDepositContract_v2 is OwnableUpgradeable {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     struct IncentiveData {
@@ -23,19 +20,11 @@ contract IncentiveDepositContract is OwnableUpgradeable {
         bool isClaimed; // Indicate if the incentive has been claimed
     }
 
-    // Every deposit requires 1 GNO tokens
-    uint256 public constant DEPOSIT_AMOUNT = 1 ether;
+    // Every deposit requires 32 mGNO tokens
+    uint256 public constant DEPOSIT_AMOUNT = 32 ether;
 
     // Node airdrop that will be distributed with the GNO incentive aswell
     uint256 public constant NODE_AIRDROP_AMOUNT = 500 ether;
-
-    // GNO token address on gnosis chain
-    IPermittableToken public constant GNO_TOKEN_CONTRACT =
-        IPermittableToken(0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb);
-
-    // mGNO wrapper contract on gnosis chain
-    IUnwrapper public constant MGNO_WRAPPER_CONTRACT =
-        IUnwrapper(0x647507A70Ff598F386CB96ae5046486389368C66);
 
     // Duration of the incentive since it's assigned
     uint256 public incentiveDuration;
@@ -125,7 +114,7 @@ contract IncentiveDepositContract is OwnableUpgradeable {
 
         addressToIncentive[msg.sender].isClaimed = true;
 
-        GNO_TOKEN_CONTRACT.transferAndCall(
+        sbcToken.transferAndCall(
             sbcDepositContract,
             DEPOSIT_AMOUNT * validatorNum,
             data
@@ -252,16 +241,5 @@ contract IncentiveDepositContract is OwnableUpgradeable {
         uint256[] memory amounts
     ) external onlyOwner {
         tokenDistro.allocateMany(recipients, amounts);
-    }
-
-    /**
-     * @dev Allows to unwrap the mGNO in this contract to GNO
-     * Only owner can call this method.
-     */
-    function unwrapMGNO() external onlyOwner {
-        MGNO_WRAPPER_CONTRACT.unwrap(
-            address(GNO_TOKEN_CONTRACT),
-            sbcToken.balanceOf(address(this))
-        );
     }
 }

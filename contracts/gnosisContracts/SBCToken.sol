@@ -2,11 +2,12 @@
 
 pragma solidity 0.8.9;
 
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
-import "./utils/Claimable.sol";
-import "./utils/PausableEIP1967Admin.sol";
-import "./interfaces/IERC677.sol";
-import "./interfaces/IERC677Receiver.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {ERC20Pausable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
+import {Claimable} from "./utils/Claimable.sol";
+import {PausableEIP1967Admin} from "./utils/PausableEIP1967Admin.sol";
+import {IERC677} from "./interfaces/IERC677.sol";
+import {IERC677Receiver} from "./interfaces/IERC677Receiver.sol";
 
 /**
  * @title SBCToken
@@ -39,17 +40,24 @@ contract SBCToken is IERC677, ERC20Pausable, PausableEIP1967Admin, Claimable {
     }
 
     /**
+     * @dev Burns tokens.
+     * Only configured minter is allowed to burn tokens, which should be a SBCWrapper contract.
+     * @param _from tokens owner.
+     * @param _amount amount of tokens to burn.
+     */
+    function burn(address _from, uint256 _amount) external {
+        require(_msgSender() == _minter, "SBCToken: not a minter");
+        _burn(_from, _amount);
+    }
+
+    /**
      * @dev Implements the ERC677 transferAndCall standard.
      * Executes a regular transfer, but calls the receiver's function to handle them in the same transaction.
      * @param _to tokens receiver.
      * @param _amount amount of sent tokens.
      * @param _data extra data to pass to the callback function.
      */
-    function transferAndCall(
-        address _to,
-        uint256 _amount,
-        bytes calldata _data
-    ) external override {
+    function transferAndCall(address _to, uint256 _amount, bytes calldata _data) external override {
         address sender = _msgSender();
         _transfer(sender, _to, _amount);
         require(IERC677Receiver(_to).onTokenTransfer(sender, _amount, _data), "SBCToken: ERC677 callback failed");

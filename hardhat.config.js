@@ -3,6 +3,7 @@ require("@nomiclabs/hardhat-waffle");
 require("solidity-coverage");
 require('@openzeppelin/hardhat-upgrades');
 require("@nomiclabs/hardhat-etherscan");
+require('hardhat-dependency-compiler');
 
 DEFAULT_MNEMONIC = "test test test test test test test test test test test test"
 DEFAULT_PVTKEY = "0x65b80d37f35356f1475134121b9e04ba0e9ed4505c34990339a4f4a3a1816968" // Test private key
@@ -22,6 +23,14 @@ task("accounts", "Prints the list of accounts", async () => {
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
+  dependencyCompiler: {
+    paths: [
+      '@openzeppelin/contracts/token/ERC20/presets/ERC20PresetFixedSupply.sol',
+      '@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol',
+      '@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol',
+    ], // ,
+    // keep: true
+  },
   solidity: {
     compilers: [
       {
@@ -92,13 +101,26 @@ module.exports = {
         count: 20,
       },
     },
-    xDAI: {
+    gnosis: {
       url: `https://rpc.gnosischain.com`,
       accounts: [`${process.env.PRIVATE_KEY_XDAI || DEFAULT_PVTKEY}`]
     }
   },
   etherscan: {
-    apiKey: `${process.env.ETHERSCAN_API_KEY}`
-  }
+    apiKey: {
+      chiado: `${process.env.ETHERSCAN_API_KEY}`,
+      gnosis: `${process.env.GNOSISCAN_API_KEY}`,
+    },
+    customChains: [
+      {
+        network: "gnosis",
+        chainId: 100,
+        urls: {
+          apiURL: "https://api.gnosisscan.io/api",
+          browserURL: "https://gnosisscan.io/"
+        }
+      }
+    ]
+  },
 };
 
