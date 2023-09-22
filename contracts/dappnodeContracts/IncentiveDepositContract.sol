@@ -33,7 +33,7 @@ contract IncentiveDepositContract is OwnableUpgradeable {
     IPermittableToken public constant GNO_TOKEN_CONTRACT =
         IPermittableToken(0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb);
 
-    // GNO token address on gnosis chain
+    // mGNO wrapper contract on gnosis chain
     IUnwrapper public constant MGNO_WRAPPER_CONTRACT =
         IUnwrapper(0x647507A70Ff598F386CB96ae5046486389368C66);
 
