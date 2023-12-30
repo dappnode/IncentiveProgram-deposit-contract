@@ -33,6 +33,9 @@ async function main() {
     console.log("#######################");
     console.log("validatorNum:", await incentiveDepositContract.validatorNum());
     console.log("incentiveDuration:", await incentiveDepositContract.incentiveDuration());
+
+    console.log("you can verify the contracts with:");
+    console.log(`npx hardhat verify ${incentiveDepositContract.address} --network ${process.env.HARDHAT_NETWORK}`);
 }
 
 main().catch((e) => {

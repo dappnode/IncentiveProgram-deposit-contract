@@ -132,7 +132,7 @@ module.exports = {
                 network: "lukso",
                 chainId: 42,
                 urls: {
-                    apiURL: "https://explorer.execution.mainnet.lukso.network/api",
+                    apiURL: "https://api.explorer.execution.mainnet.lukso.network/api",
                     browserURL: "https://explorer.execution.mainnet.lukso.network",
                 },
             },

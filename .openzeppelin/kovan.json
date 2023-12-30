@@ -1,0 +1,139 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0xa84752A7688fc595113c5b8a835D8374593b9301",
+    "txHash": "0xc5aeb356f3dbd59fd7672e72a3bf216d7cf320e632bb1d60230dbd50672e9bff"
+  },
+  "proxies": [
+    {
+      "address": "0x057004A351B3c52E9a2c15EBE5F3d188953af386",
+      "txHash": "0x743e00680515504df4b08e67cd37bacac8571961d51b542886597547233ae57f",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "617fdc3660c95ebf8df2a439139e40496751d70b3c450a553de13b594adf1190": {
+      "address": "0x2fCD50149a4D51126d066bA4040636257D83CA31",
+      "txHash": "0x0a67a0bafb1b6bd405c8e2e71a22813edf5c7875adb29fa2bb6427267807d516",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "incentiveDuration",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_uint256",
+            "contract": "IncentiveLuksoDepositContract",
+            "src": "contracts/dappnodeLuksoContracts/IncentiveLuksoDepositContract.sol:31"
+          },
+          {
+            "label": "validatorNum",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_uint256",
+            "contract": "IncentiveLuksoDepositContract",
+            "src": "contracts/dappnodeLuksoContracts/IncentiveLuksoDepositContract.sol:34"
+          },
+          {
+            "label": "addressToIncentive",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_mapping(t_address,t_struct(IncentiveData)1190_storage)",
+            "contract": "IncentiveLuksoDepositContract",
+            "src": "contracts/dappnodeLuksoContracts/IncentiveLuksoDepositContract.sol:37"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_struct(IncentiveData)1190_storage)": {
+            "label": "mapping(address => struct IncentiveLuksoDepositContract.IncentiveData)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(IncentiveData)1190_storage": {
+            "label": "struct IncentiveLuksoDepositContract.IncentiveData",
+            "members": [
+              {
+                "label": "endTime",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "isClaimed",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    }
+  }
+}

@@ -11,7 +11,9 @@
     "upgrade:IncentiveProgram:gnosis": "npx hardhat run upgrade/upgradeIncentiveDepositContract.js --network gnosis",
     "flatten:IncentiveProgram": "npx hardhat flatten contracts/dappnodeContracts/IncentiveDepositContract.sol > deployment/IncentveDepositContract.flat",
     "getClaimedIncentives": "node scripts/getClaimedIncentives.js",
-    "allocateNodeAirdrop": "npx hardhat run scripts/allocateNodeAirdrop.js --network gnosis"
+    "allocateNodeAirdrop": "npx hardhat run scripts/allocateNodeAirdrop.js --network gnosis",
+    "deploy:IncentiveLuksoProgram:hardhat": "npx hardhat run deployment/lukso/deployIncentiveLukso.js --network hardhat",
+    "deploy:IncentiveLuksoProgram:lukso": "npx hardhat run deployment/lukso/deployIncentiveLukso.js --network lukso"
   },
   "dependencies": {
     "@nomicfoundation/hardhat-network-helpers": "^1.0.10",
